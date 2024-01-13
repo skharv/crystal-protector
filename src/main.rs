@@ -7,6 +7,7 @@ mod system;
 
 pub const WIDTH: i32 = 800;
 pub const HEIGHT: i32 = 800;
+pub const CHUNK_SIZE: i32 = 32;
 
 fn main() {
     let mut app = App::new();
@@ -34,8 +35,8 @@ fn main() {
         width: WIDTH as u32,
         height: HEIGHT as u32,
         scale_factor: 1.0,
-        auto_resize_buffer: true,
-        auto_resize_surface: true,
+        auto_resize_buffer: false,
+        auto_resize_surface: false,
         })
     })
     .add_plugins(system::GamePlugin);

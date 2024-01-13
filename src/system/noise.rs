@@ -17,7 +17,7 @@ pub fn generate(
             if noise < 0.0 {
                 continue;
             } else {
-                noise = 1.0;
+                noise = 0.5;
             }
             let colour_value = (((noise + 1.0) * 0.5) * 255.0) as u8;
             commands.spawn(bundle::PixelBundle {
@@ -30,6 +30,10 @@ pub fn generate(
                     g: colour_value,
                     b: colour_value,
                     a: colour_value
+                },
+                chunk: component::Chunk{
+                    x: w / crate::CHUNK_SIZE,
+                    y: h / crate::CHUNK_SIZE
                 }
             });
         }

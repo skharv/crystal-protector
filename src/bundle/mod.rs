@@ -6,4 +6,5 @@ use crate::component;
 pub struct PixelBundle{
     pub position: component::Position,
     pub colour: component::Colour,
+    pub chunk: component::Chunk
 }
