@@ -25,3 +25,11 @@ pub struct Chunk {
     pub x: i32,
     pub y: i32
 }
+
+#[derive(Component)]
+pub struct ChunkList {
+    pub entities: Vec<Entity>
+}
+
+#[derive(Component)]
+pub struct Land;

@@ -19,7 +19,7 @@ pub fn draw(
     let frame = wrapper.pixels.frame_mut();
 
     for (position, color) in query.iter() {
-        let index = ((position.y * 4 * crate::WIDTH) + position.x * 4) as usize;
+        let index = ((position.y * 4 * (crate::WIDTH/crate::SCALE)) + position.x * 4) as usize;
 
         if index < frame.iter().count() {
             frame[index] = color.r;

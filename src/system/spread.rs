@@ -9,8 +9,7 @@ pub fn spawn(
     ) {
     commands.spawn(bundle::PixelBundle {
         position: component::Position { x: 175, y: 200 },
-        colour: component::Colour { r: 0, g: 200, b: 0, a: 255 },
-                chunk: component::Chunk{ x: 175 / crate::CHUNK_SIZE, y: 200 / crate::CHUNK_SIZE }
+        colour: component::Colour { r: 0, g: 200, b: 0, a: 255 }
     }).insert(component::Spread {
         duration: 5.0,
         counter: 0.0
@@ -18,11 +17,13 @@ pub fn spawn(
 }
 
 pub fn grow(
-    mut spread_query: Query<(&mut component::Position, &mut component::Chunk), With<component::Spread>>,
-    land_query: Query<(&component::Position, &component::Chunk), Without<component::Spread>>
+    mut commands: Commands,
+    mut spread_query: Query<(Entity, &mut component::Position, &mut component::Spread), With<component::Spread>>,
+    land_query: Query<(Entity, &component::Position), Without<component::Spread>>,
+    //mut chunk_query: Query<(&mut component::ChunkList, &component::Position)>
     ) {
     let mut rng = rand::thread_rng();
-    for (mut position, mut chunk) in spread_query.iter_mut() {
+    for (entity, mut position, mut spread) in spread_query.iter_mut() {
         let mut new_position = IVec2::new(position.x, position.y);
         let direction = rng.gen_range(0..4);
         match direction {
@@ -34,21 +35,17 @@ pub fn grow(
         }
         let mut update_position = true;
 
-        //loop through land query where land chunk is adjacent to spread chunk 
-        
-        
-        for (land_position, land_chunk) in land_query.iter() {
+        for (land_entity, land_position) in land_query.iter() {
             if land_position.x == new_position.x && land_position.y == new_position.y {
+                commands.entity(land_entity).despawn();
                 update_position = false;
+                spread.counter += 1.0;
                 break;
             }
         }
         if update_position {
             position.x = new_position.x;
             position.y = new_position.y;
-
-            chunk.x = new_position.x / crate::CHUNK_SIZE;
-            chunk.y = new_position.y / crate::CHUNK_SIZE;
         }
     }
 }
@@ -76,8 +73,7 @@ pub fn spread(
 
             commands.spawn(bundle::PixelBundle {
                 position: component::Position { x: new_position.x, y: new_position.y },
-                colour: component::Colour { r: spread_colour.r, g: spread_colour.g, b: spread_colour.b, a: spread_colour.a },
-                chunk: component::Chunk { x: new_position.x / crate::CHUNK_SIZE, y: new_position.y / crate::CHUNK_SIZE }
+                colour: component::Colour { r: spread_colour.r, g: spread_colour.g, b: spread_colour.b, a: spread_colour.a }
             }).insert(component::Spread {
                 duration: rng.gen_range(5.0..10.0),
                 counter: 0.0

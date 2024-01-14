@@ -7,7 +7,8 @@ mod system;
 
 pub const WIDTH: i32 = 800;
 pub const HEIGHT: i32 = 800;
-pub const CHUNK_SIZE: i32 = 32;
+pub const SCALE: i32 = 2;
+pub const CHUNK_SIZE: i32 = 16;
 
 fn main() {
     let mut app = App::new();
@@ -32,10 +33,10 @@ fn main() {
         }))
     .add_plugins(PixelsPlugin {
         primary_window: Some(PixelsOptions{
-        width: WIDTH as u32,
-        height: HEIGHT as u32,
-        scale_factor: 1.0,
-        auto_resize_buffer: false,
+        width: (WIDTH/SCALE) as u32,
+        height: (WIDTH/SCALE) as u32,
+        scale_factor: SCALE as f32,
+        auto_resize_buffer: true,
         auto_resize_surface: false,
         })
     })
