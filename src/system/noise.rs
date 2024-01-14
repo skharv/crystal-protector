@@ -36,7 +36,7 @@ pub fn generate(
             .id();
 
             for (mut list, position) in chunk_query.iter_mut() {
-                if w / crate::CHUNK_SIZE == position.x && h / crate::CHUNK_SIZE == position.y {
+                if (w / crate::CHUNK_SIZE) == position.x && (h / crate::CHUNK_SIZE) == position.y {
                     list.entities.push(id);
                 }
             }

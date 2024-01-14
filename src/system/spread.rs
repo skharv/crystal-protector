@@ -19,8 +19,8 @@ pub fn spawn(
 pub fn grow(
     mut commands: Commands,
     mut spread_query: Query<(Entity, &mut component::Position, &mut component::Spread), With<component::Spread>>,
-    land_query: Query<(Entity, &component::Position), Without<component::Spread>>,
-    //mut chunk_query: Query<(&mut component::ChunkList, &component::Position)>
+    mut chunk_query: Query<(&mut component::ChunkList, &component::Position), Without<component::Spread>>,
+    land_query: Query<(Entity, &component::Position), (With<component::Land>, Without<component::Spread>)>
     ) {
     let mut rng = rand::thread_rng();
     for (entity, mut position, mut spread) in spread_query.iter_mut() {
@@ -34,6 +34,23 @@ pub fn grow(
             _ => continue,
         }
         let mut update_position = true;
+
+        for (mut list, chunk) in chunk_query.iter_mut() {
+            //if new_position is not within the chunk, move entity from this list into the chunk it
+            //belongs to
+            if (new_position.x / crate::CHUNK_SIZE) != chunk.x || (new_position.y / crate::CHUNK_SIZE) != chunk.y {
+                list.entities.retain(|&x| x != entity);
+                println!("Leaving {0},{1}", chunk.x, chunk.y);
+                for (mut list, chunk) in chunk_query.iter_mut() {
+                    if (new_position.x / crate::CHUNK_SIZE) == chunk.x && (new_position.y / crate::CHUNK_SIZE) == chunk.y {
+                        println!("Entering {0},{1}", chunk.x, chunk.y);
+                        list.entities.push(entity);
+                        break;
+                    }
+                }
+                break;
+            }
+        }
 
         for (land_entity, land_position) in land_query.iter() {
             if land_position.x == new_position.x && land_position.y == new_position.y {

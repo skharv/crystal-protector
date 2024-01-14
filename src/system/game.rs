@@ -6,8 +6,8 @@ use crate::component;
 pub fn setup(
     mut commands: Commands
     ) {
-    for x in 0..(crate::WIDTH / crate::CHUNK_SIZE) {
-        for y in 0..(crate::HEIGHT / crate::CHUNK_SIZE) {
+    for x in 0..((crate::WIDTH / crate::CHUNK_SIZE) / crate::CHUNK_SIZE) {
+        for y in 0..((crate::HEIGHT / crate::CHUNK_SIZE) / crate::CHUNK_SIZE) {
             commands.spawn(bundle::ChunkBundle {
                 position: component::Position {
                     x,
@@ -19,4 +19,8 @@ pub fn setup(
             });
         }
     }
+}
+
+pub fn update_chunk(
+    ) {
 }
