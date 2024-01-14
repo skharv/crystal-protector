@@ -22,5 +22,7 @@ pub fn setup(
 }
 
 pub fn update_chunk(
+    spread_query: Query<(Entity, &component::Position), With<component::Spread>>,
+    chunk_query: Query<(&component::ChunkList, &component::Position)>
     ) {
 }

@@ -8,7 +8,7 @@ pub fn clear(
     ) {
     let Ok(mut wrapper) = wrapper_query.get_single_mut() else { return };
     let frame = wrapper.pixels.frame_mut();
-    frame.copy_from_slice(&[0x00, 0x00, 0x00, 0x00].repeat(frame.len()/4));
+    frame.copy_from_slice(&[199, 115, 105, 255].repeat(frame.len()/4));
 }
 
 pub fn draw(

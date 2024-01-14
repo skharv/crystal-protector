@@ -15,6 +15,12 @@ pub struct Colour {
 }
 
 #[derive(Component)]
+pub struct MoveTimer {
+    pub duration: f32,
+    pub counter: f32
+}
+
+#[derive(Component)]
 pub struct Spread {
     pub duration: f32,
     pub counter: f32

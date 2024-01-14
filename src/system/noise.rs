@@ -14,23 +14,20 @@ pub fn generate(
 
     for w in 0..(crate::WIDTH/crate::SCALE) {
         for h in 0..(crate::HEIGHT/crate::SCALE) {
-            let mut noise = fbm.get([w as f64, h as f64]);
+            let noise = fbm.get([w as f64, h as f64]);
             if noise < 0.0 {
                 continue;
-            } else {
-                noise = 0.5;
             }
-            let colour_value = (((noise + 1.0) * 0.5) * 255.0) as u8;
             let id = commands.spawn(bundle::PixelBundle {
                 position: component::Position{
                     x: w,
                     y: h
                 },
                 colour: component::Colour{
-                    r: colour_value,
-                    g: colour_value,
-                    b: colour_value,
-                    a: colour_value
+                    r: 70,
+                    g: 73,
+                    b: 105,
+                    a: 255
                 }
             }).insert(component::Land)
             .id();
