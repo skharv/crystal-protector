@@ -37,6 +37,12 @@ pub struct Spread {
 }
 
 #[derive(Component)]
+pub struct Hunger {
+    pub duration: f32,
+    pub counter: f32
+}
+
+#[derive(Component)]
 pub struct Chunk {
     pub x: i32,
     pub y: i32

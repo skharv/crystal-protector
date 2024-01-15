@@ -5,6 +5,7 @@ use crate::bundle;
 use crate::component;
 
 const SPREAD: [u8; 4] = [148, 197, 172, 255];
+const CAP: usize = 10000;
 
 pub fn spawn(
     mut commands: Commands,
@@ -25,9 +26,10 @@ pub fn spawn(
     let entity = commands.spawn(bundle::SpreadBundle {
         position: component::Position { x: x as f32, y: y as f32 },
         velocity: component::Velocity { x: f32::cos(new_angle), y:f32::sin(new_angle) },
-        speed: component::Speed { value: rng.gen_range(0.5..5.0) },
+        speed: component::Speed { value: rng.gen_range(5.0..15.0) },
         colour: component::Colour { r: SPREAD[0], g: SPREAD[1], b: SPREAD[2], a: SPREAD[3] },
-        spread: component::Spread { duration: 5.0, counter: 0.0 }
+        spread: component::Spread { duration: 2.0, counter: 0.0 },
+        hunger: component::Hunger { duration: 1000.0, counter: 0.0 },
     }).id();
 
     for (mut list, chunk) in chunk_query.iter_mut() {
@@ -39,15 +41,15 @@ pub fn spawn(
 
 pub fn movement(
     mut commands: Commands,
-    mut spread_query: Query<(Entity, &mut component::Position, &mut component::Velocity), With<component::Spread>>,
+    mut spread_query: Query<(Entity, &mut component::Position, &mut component::Velocity, &mut component::Spread, &mut component::Hunger, &component::Speed), With<component::Spread>>,
     mut chunk_query: Query<(&mut component::EntityList, &component::Chunk)>, 
     land_query: Query<&component::Position, (With<component::Land>, Without<component::Spread>)>,
     time: Res<Time>
     ) {
     let mut rng = rand::thread_rng();
-    for (entity, mut position, mut velocity) in spread_query.iter_mut() {
+    for (entity, mut position, mut velocity, mut spread, mut hunger, speed) in spread_query.iter_mut() {
 
-        let mut new_position = Vec2::new(position.x + (velocity.x * time.delta_seconds()), position.y + (velocity.y * time.delta_seconds()));
+        let mut new_position = Vec2::new(position.x + (velocity.x * speed.value * time.delta_seconds()), position.y + (velocity.y * speed.value * time.delta_seconds()));
         let mut update_angle = false;
 
         if new_position.x > (crate::WIDTH / crate::SCALE) as f32 {
@@ -77,6 +79,8 @@ pub fn movement(
                             if found_entity.x as i32 == new_position.x as i32 && found_entity.y as i32 == new_position.y as i32 {
                                 update_angle = true;
                                 update_position = false;
+                                spread.counter += 0.2;
+                                hunger.counter = 0.0;
                                 commands.entity(*list_entity).despawn();
                                 break;
                             }
@@ -118,12 +122,13 @@ pub fn movement(
 
 pub fn spread(
     mut commands: Commands,
-    mut spread_query: Query<(&component::Position, &component::Colour, &mut component::Spread)>,
+    mut spread_query: Query<(Entity, &component::Position, &component::Colour, &mut component::Spread)>,
     mut chunk_query: Query<(&mut component::EntityList, &component::Chunk)>, 
     time: Res<Time>
     ) {
     let mut rng = rand::thread_rng();
-    for (position, spread_colour, mut spread) in spread_query.iter_mut() {
+    let cap_met = spread_query.iter().count() > CAP;
+    for (parent, position, spread_colour, mut spread) in spread_query.iter_mut() {
         spread.counter += time.delta_seconds();
 
         if spread.counter >= spread.duration {
@@ -135,9 +140,10 @@ pub fn spread(
             let entity = commands.spawn(bundle::SpreadBundle {
                 position: component::Position { x: new_position.x as f32, y: new_position.y as f32 },
                 velocity: component::Velocity { x: f32::cos(new_angle), y:f32::sin(new_angle) },
-                speed: component::Speed { value: rng.gen_range(0.5..5.0) },
+                speed: component::Speed { value: rng.gen_range(5.0..15.0) },
                 colour: component::Colour { r: spread_colour.r, g: spread_colour.g, b: spread_colour.b, a: spread_colour.a },
-                spread: component::Spread { duration: rng.gen_range(5.0..20.0), counter: 0.0 }
+                spread: component::Spread { duration: rng.gen_range(5.0..20.0), counter: 0.0 },
+                hunger: component::Hunger { duration: rng.gen_range(30.0..120.0), counter: 0.0 }
             }).id();
 
             for (mut list, chunk) in chunk_query.iter_mut() {
@@ -146,7 +152,26 @@ pub fn spread(
                 }
             }
 
-            spread.duration *= 2.0;
+            if cap_met {
+                println!("too many");
+                commands.entity(parent).despawn();
+            } else {
+                spread.duration *= 2.0;
+            }
+        }
+    }
+}
+
+pub fn hunger (
+    mut commands: Commands,
+    mut spread_query: Query<(Entity, &mut component::Hunger)>,
+    time: Res<Time>
+    ) {
+    for (entity, mut hunger) in spread_query.iter_mut() {
+        hunger.counter += time.delta_seconds();
+        if hunger.counter >= hunger.duration {
+            println!("Died from starvation");
+            commands.entity(entity).despawn();
         }
     }
 }

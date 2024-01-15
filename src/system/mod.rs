@@ -18,6 +18,7 @@ impl Plugin for GamePlugin {
             .add_systems(PostStartup, player::spawn)
             .add_systems(Update, spread::movement)
             .add_systems(Update, spread::spread)
+            .add_systems(Update, spread::hunger)
             .add_systems(Update, player::update_input)
             .add_systems(Update, player::update_velocity.after(player::update_input))
             .add_systems(Update, player::update_position.after(player::update_velocity))

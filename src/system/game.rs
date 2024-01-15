@@ -8,7 +8,6 @@ pub fn setup(
     ) {
     for x in 0..((crate::WIDTH / crate::SCALE) / crate::CHUNK_SIZE) {
         for y in 0..((crate::HEIGHT / crate::SCALE) / crate::CHUNK_SIZE) {
-            println!("creating chunk at {0},{1}", x, y);
             commands.spawn(bundle::ChunkBundle {
                 position: component::Chunk {
                     x,

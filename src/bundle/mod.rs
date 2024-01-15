@@ -14,7 +14,8 @@ pub struct SpreadBundle{
     pub velocity: component::Velocity,
     pub speed: component::Speed,
     pub colour: component::Colour,
-    pub spread: component::Spread
+    pub spread: component::Spread,
+    pub hunger: component::Hunger
 }
 
 #[derive(Bundle)]
