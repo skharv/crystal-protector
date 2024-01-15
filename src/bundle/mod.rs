@@ -9,7 +9,32 @@ pub struct PixelBundle{
 }
 
 #[derive(Bundle)]
-pub struct ChunkBundle {
+pub struct SpreadBundle{
     pub position: component::Position,
-    pub entities: component::ChunkList
+    pub velocity: component::Velocity,
+    pub speed: component::Speed,
+    pub colour: component::Colour,
+    pub spread: component::Spread
+}
+
+#[derive(Bundle)]
+pub struct PlayerBundle{
+    pub position: component::Position,
+    pub velocity: component::Velocity,
+    pub speed: component::Speed,
+    pub colour: component::Colour,
+    pub input: component::Input
+}
+
+#[derive(Bundle)]
+pub struct LandBundle{
+    pub position: component::Position,
+    pub colour: component::Colour,
+    pub land: component::Land
+}
+
+#[derive(Bundle)]
+pub struct ChunkBundle {
+    pub position: component::Chunk,
+    pub entities: component::EntityList
 }
