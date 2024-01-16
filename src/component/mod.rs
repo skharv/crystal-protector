@@ -84,3 +84,7 @@ pub struct Resources {
 #[derive(Component)]
 pub struct Ui;
 
+#[derive(Component)]
+pub struct Symbol {
+    pub shape: [[bool; 8]; 8]   
+}

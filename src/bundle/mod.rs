@@ -49,3 +49,11 @@ pub struct BeamBundle {
     pub timer: component::Timer,
     pub beam: component::Beam
 }
+
+#[derive(Bundle)]
+pub struct SymbolBundle {
+    pub position: component::Position,
+    pub colour: component::Colour,
+    pub symbol: component::Symbol,
+    pub ui: component::Ui
+}

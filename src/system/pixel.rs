@@ -15,7 +15,8 @@ pub fn clear(
 
 pub fn draw(
     mut wrapper_query: Query<&mut PixelsWrapper>,
-    query: Query<(&component::Position, &component::Colour)>,
+    query: Query<(&component::Position, &component::Colour), Without<component::Ui>>,
+    ui_query: Query<(&component::Position, &component::Colour, &component::Symbol), With<component::Ui>>
     ) {
     let Ok(mut wrapper) = wrapper_query.get_single_mut() else { return };
     let frame = wrapper.pixels.frame_mut();
@@ -41,6 +42,23 @@ pub fn draw(
             frame[index+1] = color.g;
             frame[index+2] = color.b;
             frame[index+3] = color.a;
+        }
+    }
+
+    for (position, color, symbol) in ui_query.iter() {
+        for i in 0..symbol.shape.len() {
+            for j in 0..symbol.shape[i].len() {
+                if symbol.shape[i][j] {
+                    let index = (((position.y as i32 + i as i32) * 4 * (crate::WIDTH/crate::SCALE)) + (position.x as i32 + j as i32) * 4) as usize;
+
+                    if index < frame.iter().count() {
+                        frame[index] = color.r;
+                        frame[index+1] = color.g;
+                        frame[index+2] = color.b;
+                        frame[index+3] = color.a;
+                    }
+                }
+            }
         }
     }
 }
