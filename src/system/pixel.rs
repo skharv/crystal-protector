@@ -15,7 +15,7 @@ pub fn clear(
 
 pub fn draw(
     mut wrapper_query: Query<&mut PixelsWrapper>,
-    query: Query<(&component::Position, &component::Colour)>
+    query: Query<(&component::Position, &component::Colour)>,
     ) {
     let Ok(mut wrapper) = wrapper_query.get_single_mut() else { return };
     let frame = wrapper.pixels.frame_mut();

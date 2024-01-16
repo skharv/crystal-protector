@@ -25,7 +25,8 @@ pub struct PlayerBundle{
     pub speed: component::Speed,
     pub colour: component::Colour,
     pub input: component::Input,
-    pub absorb: component::Absorb
+    pub absorb: component::Absorb,
+    pub resources: component::Resources
 }
 
 #[derive(Bundle)]

@@ -67,10 +67,20 @@ pub struct Beam;
 
 #[derive(Component)]
 pub struct Timer {
-    pub remaining: f32,
+    pub remaining: f32
 }
 
 #[derive(Component)]
 pub struct DeathTimer {
-    pub remaining: f32,
+    pub remaining: f32
 }
+
+#[derive(Component)]
+pub struct Resources {
+    pub maximum: i32,
+    pub amount: i32
+}
+
+#[derive(Component)]
+pub struct Ui;
+

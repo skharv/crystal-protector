@@ -29,7 +29,8 @@ pub fn spawn(
         speed: component::Speed { value: 20.0 },
         colour: component::Colour { r: PLAYER[0], g: PLAYER[1], b: PLAYER[2], a: PLAYER[3] },
         input: component::Input { angle: None },
-        absorb: component::Absorb { radius: 2.5, range: 20.0 } 
+        absorb: component::Absorb { radius: 2.5, range: 20.0 },
+        resources: component::Resources { maximum: 1000, amount: 0 }
     }).id();
 
     for (mut list, chunk) in chunk_query.iter_mut() {
@@ -136,14 +137,14 @@ pub fn absorb(
     mut commands: Commands,
     buttons: Res<Input<MouseButton>>,
     window: Query<&Window, With<PrimaryWindow>>,
-    mut absorb_query: Query<(&mut component::Position, &component::Absorb), With<component::Input>>,
+    mut absorb_query: Query<(&component::Position, &mut component::Resources, &component::Absorb), With<component::Input>>,
     mut chunk_query: Query<(&mut component::EntityList, &component::Chunk)>, 
     mut land_query: Query<(&component::Position, &mut component::Colour), (With<component::Land>, Without<component::Input>, Without<component::Spread>)>
 ) {
     let mut rng = rand::thread_rng();
     if buttons.just_pressed(MouseButton::Right) {
         if let Some(cursor_position) = window.single().cursor_position() {
-            for (position, absorb) in absorb_query.iter_mut() { 
+            for (position, mut resouces, absorb) in absorb_query.iter_mut() { 
                 let distance = ((cursor_position.x/2.0 - position.x).powi(2) + (cursor_position.y/2.0 - position.y).powi(2)).sqrt();
                 for step in 1..absorb.range as i32 {
                     let x = position.x + (((step as f32) * (cursor_position.x/2.0 - position.x)) / distance);
@@ -189,12 +190,14 @@ pub fn absorb(
                                                 found_colour.b = BEAM[2];
                                                 found_colour.a = BEAM[3];
                                                 commands.entity(*list_entity).insert(component::DeathTimer{ remaining: rng.gen_range(0.05..0.25) });
+                                                resouces.amount += 1;
                                             }
                                         }
                                     }
                                 }
                             }
                         }
+                        println!("{} Resources", resouces.amount);
                         return;
                     }
                 }
