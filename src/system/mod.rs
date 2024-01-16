@@ -1,12 +1,12 @@
 use bevy::prelude::*;
 use bevy_pixels::prelude::*;
 
+mod beam;
 mod game;
 mod noise;
 mod pixel;
 mod player;
 mod spread;
-
 
 pub struct GamePlugin;
 
@@ -20,8 +20,11 @@ impl Plugin for GamePlugin {
             .add_systems(Update, spread::spread)
             .add_systems(Update, spread::hunger)
             .add_systems(Update, player::update_input)
+            .add_systems(Update, player::absorb)
             .add_systems(Update, player::update_velocity.after(player::update_input))
             .add_systems(Update, player::update_position.after(player::update_velocity))
+            .add_systems(Update, beam::timer)
+            .add_systems(Update, game::death_timer)
             .add_systems(Draw, pixel::clear)
             .add_systems(Draw, pixel::draw.after(pixel::clear));
     }

@@ -21,7 +21,20 @@ pub fn draw(
     let frame = wrapper.pixels.frame_mut();
 
     for (position, color) in query.iter() {
-        let index = ((position.y as i32 * 4 * (crate::WIDTH/crate::SCALE)) + position.x as i32 * 4) as usize;
+        let mut new_position = Vec2::new(position.x, position.y);
+        if new_position.x > (crate::WIDTH / crate::SCALE) as f32 {
+            new_position.x = (crate::WIDTH / crate::SCALE)as f32;
+        }
+        if new_position.x < 0.0 {
+            new_position.x = 0.0;
+        }
+        if new_position.y > (crate::HEIGHT / crate::SCALE) as f32 {
+            new_position.y = (crate::HEIGHT / crate::SCALE) as f32;
+        }
+        if new_position.y < 0.0 {
+            new_position.y = 0.0;
+        }
+        let index = ((new_position.y as i32 * 4 * (crate::WIDTH/crate::SCALE)) + new_position.x as i32 * 4) as usize;
 
         if index < frame.iter().count() {
             frame[index] = color.r;

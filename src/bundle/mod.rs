@@ -24,7 +24,8 @@ pub struct PlayerBundle{
     pub velocity: component::Velocity,
     pub speed: component::Speed,
     pub colour: component::Colour,
-    pub input: component::Input
+    pub input: component::Input,
+    pub absorb: component::Absorb
 }
 
 #[derive(Bundle)]
@@ -38,4 +39,12 @@ pub struct LandBundle{
 pub struct ChunkBundle {
     pub position: component::Chunk,
     pub entities: component::EntityList
+}
+
+#[derive(Bundle)]
+pub struct BeamBundle {
+    pub position: component::Position,
+    pub colour: component::Colour,
+    pub timer: component::Timer,
+    pub beam: component::Beam
 }

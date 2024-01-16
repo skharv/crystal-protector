@@ -23,6 +23,12 @@ pub struct Speed {
 }
 
 #[derive(Component)]
+pub struct Absorb {
+    pub radius: f32,
+    pub range: f32
+}
+
+#[derive(Component)]
 pub struct Colour {
     pub r: u8,
     pub g: u8,
@@ -55,3 +61,16 @@ pub struct EntityList {
 
 #[derive(Component)]
 pub struct Land;
+
+#[derive(Component)]
+pub struct Beam;
+
+#[derive(Component)]
+pub struct Timer {
+    pub remaining: f32,
+}
+
+#[derive(Component)]
+pub struct DeathTimer {
+    pub remaining: f32,
+}
