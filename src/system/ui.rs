@@ -6,15 +6,14 @@ use crate::component;
 pub fn generate_symbol(
     mut commands: Commands
     ) {
-
-    let array = [[false, false, true, true, true, true, false, false],
-                 [false, true, false, false, false, false, true, false],
-                 [false, true, false, false, false, false, true, false],
-                 [false, true, false, false, false, false, true, false],
-                 [false, true, false, false, false, false, true, false],
-                 [false, true, false, false, false, false, true, false],
-                 [false, true, false, false, false, false, true, false],
-                 [false, false, true, true, true, true, false, false]];
+    let array = [['3', 'C'],
+                ['4', '2'],
+                ['4', '2'],
+                ['4', '2'],
+                ['4', '2'],
+                ['4', '2'],
+                ['4', '2'],
+                ['3', 'C']];
 
     commands.spawn(bundle::SymbolBundle {
         position: component::Position { x: 10.0, y: 10.0 },

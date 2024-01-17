@@ -4,6 +4,7 @@ use bevy_pixels::{PixelsPlugin, PixelsOptions};
 mod bundle;
 mod component;
 mod system;
+mod utils;
 
 pub const WIDTH: i32 = 800;
 pub const HEIGHT: i32 = 800;

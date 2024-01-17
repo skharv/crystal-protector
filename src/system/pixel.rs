@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use bevy_pixels::*;
 
 use crate::component;
+use crate::utils;
 
 const CLEAR: [u8; 4] = [53, 93, 104, 255];
 
@@ -48,14 +49,18 @@ pub fn draw(
     for (position, color, symbol) in ui_query.iter() {
         for i in 0..symbol.shape.len() {
             for j in 0..symbol.shape[i].len() {
-                if symbol.shape[i][j] {
-                    let index = (((position.y as i32 + i as i32) * 4 * (crate::WIDTH/crate::SCALE)) + (position.x as i32 + j as i32) * 4) as usize;
+                let binary = utils::binary_lookup(symbol.shape[i][j]);
+                let horizontal_index = j*binary.len();
+                for k in 0..binary.len() {
+                    if binary[k] {
+                        let index = (((position.y as i32 + i as i32) * 4 * (crate::WIDTH/crate::SCALE)) + (position.x as i32 + horizontal_index as i32 + k as i32) * 4) as usize;
 
-                    if index < frame.iter().count() {
-                        frame[index] = color.r;
-                        frame[index+1] = color.g;
-                        frame[index+2] = color.b;
-                        frame[index+3] = color.a;
+                        if index < frame.iter().count() {
+                            frame[index] = color.r;
+                            frame[index+1] = color.g;
+                            frame[index+2] = color.b;
+                            frame[index+3] = color.a;
+                        }
                     }
                 }
             }

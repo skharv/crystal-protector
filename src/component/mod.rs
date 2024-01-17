@@ -86,5 +86,5 @@ pub struct Ui;
 
 #[derive(Component)]
 pub struct Symbol {
-    pub shape: [[bool; 8]; 8]   
+    pub shape: [[char; 2]; 8]   
 }
