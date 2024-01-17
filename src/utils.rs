@@ -1,3 +1,13 @@
+
+pub const SYMBOL_RESOURCE: &str = "08181C3C3466663C";
+pub const SYMBOL_BULLET: &str = "70889CBE7F3E1C08";
+pub const SYMBOL_HOUSE: &str = "182442FF425A5A7E";
+pub const SYMBOL_BOMB: &str = "01091670F8F8F870";
+pub const SYMBOL_FACE: &str = "7E81A5A58199817E";
+pub const SYMBOL_FACTORY: &str = "020A2A2A7E7E7EFF";
+pub const SYMBOL_BUBBLE: &str = "3C4289858581423C";
+
+
 pub fn convert_string_to_symbol(
     input: &String
     ) -> [bool; crate::SYMBOL_SIZE * crate::SYMBOL_SIZE] {

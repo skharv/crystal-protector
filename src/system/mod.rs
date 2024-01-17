@@ -27,6 +27,8 @@ impl Plugin for GamePlugin {
             .add_systems(Update, player::update_position.after(player::update_velocity))
             .add_systems(Update, beam::timer)
             .add_systems(Update, game::death_timer)
+            .add_systems(Update, ui::update_bars)
+            .add_systems(Update, ui::action)
             .add_systems(Draw, pixel::clear)
             .add_systems(Draw, pixel::draw.after(pixel::clear));
     }

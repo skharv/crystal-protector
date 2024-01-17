@@ -57,3 +57,11 @@ pub struct SymbolBundle {
     pub symbol: component::Symbol,
     pub ui: component::Ui
 }
+
+#[derive(Bundle)]
+pub struct BarBundle {
+    pub position: component::Position,
+    pub colour: component::Colour,
+    pub bar: component::Bar,
+    pub ui: component::Ui
+}

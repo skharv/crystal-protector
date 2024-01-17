@@ -17,7 +17,8 @@ pub fn clear(
 pub fn draw(
     mut wrapper_query: Query<&mut PixelsWrapper>,
     query: Query<(&component::Position, &component::Colour), Without<component::Ui>>,
-    ui_query: Query<(&component::Position, &component::Colour, &component::Symbol), With<component::Ui>>
+    symbol_query: Query<(&component::Position, &component::Colour, &component::Symbol), With<component::Ui>>,
+    bar_query: Query<(&component::Position, &component::Colour, &component::Bar), With<component::Ui>>
     ) {
     let Ok(mut wrapper) = wrapper_query.get_single_mut() else { return };
     let frame = wrapper.pixels.frame_mut();
@@ -46,7 +47,7 @@ pub fn draw(
         }
     }
 
-    for (position, color, symbol) in ui_query.iter() {
+    for (position, color, symbol) in symbol_query.iter() {
         let bool_list = utils::convert_string_to_symbol(&symbol.shape);
         
         for i in 0..bool_list.len() {
@@ -61,23 +62,23 @@ pub fn draw(
             }
             }
         }
-        //for i in 0..symbol.shape.len() {
-        //    for j in 0..symbol.shape[i].len() {
-        //        let binary = utils::binary_lookup(symbol.shape[i][j]);
-        //        let horizontal_index = j*binary.len();
-        //        for k in 0..binary.len() {
-        //            if binary[k] {
-        //                let index = (((position.y as i32 + i as i32) * 4 * (crate::WIDTH/crate::SCALE)) + (position.x as i32 + horizontal_index as i32 + k as i32) * 4) as usize;
+    }
 
-        //                if index < frame.iter().count() {
-        //                    frame[index] = color.r;
-        //                    frame[index+1] = color.g;
-        //                    frame[index+2] = color.b;
-        //                    frame[index+3] = color.a;
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
+    for (position, color, bar) in bar_query.iter() {
+        
+        for w in 0..bar.width {
+        for h in 0..bar.height {
+            if w == 0 || h == 0 || w == bar.width-1 || h == bar.height-1 || ((w as f32/bar.width as f32)*100.0 <= bar.percent) {
+            let index = (((position.y as i32 + h) * 4 * (crate::WIDTH/crate::SCALE)) + (position.x as i32 + w) * 4) as usize;
+
+            if index < frame.iter().count() {
+                frame[index] = color.r;
+                frame[index+1] = color.g;
+                frame[index+2] = color.b;
+                frame[index+3] = color.a;
+            }
+            }
+        }
+        }
     }
 }

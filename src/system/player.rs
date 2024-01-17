@@ -139,12 +139,85 @@ pub fn absorb(
     window: Query<&Window, With<PrimaryWindow>>,
     mut absorb_query: Query<(&component::Position, &mut component::Resources, &component::Absorb), With<component::Input>>,
     mut chunk_query: Query<(&mut component::EntityList, &component::Chunk)>, 
-    mut land_query: Query<(&component::Position, &mut component::Colour), (With<component::Land>, Without<component::Input>, Without<component::Spread>)>
+    mut land_query: Query<(&component::Position, &mut component::Colour), (With<component::Land>, Without<component::Input>, Without<component::Spread>, Without<component::DeathTimer>)>
 ) {
     let mut rng = rand::thread_rng();
     if buttons.just_pressed(MouseButton::Right) {
         if let Some(cursor_position) = window.single().cursor_position() {
             for (position, mut resouces, absorb) in absorb_query.iter_mut() { 
+                let distance = ((cursor_position.x/2.0 - position.x).powi(2) + (cursor_position.y/2.0 - position.y).powi(2)).sqrt();
+                for step in 1..absorb.range as i32 {
+                    let x = position.x + (((step as f32) * (cursor_position.x/2.0 - position.x)) / distance);
+                    let y = position.y + (((step as f32) * (cursor_position.y/2.0 - position.y)) / distance);
+                    commands.spawn(bundle::BeamBundle {
+                        position: component::Position{ x, y },
+                        colour: component::Colour{ r: BEAM[0], g: BEAM[1], b: BEAM[2], a: BEAM[3]},
+                        timer: component::Timer{ remaining: rng.gen_range(0.05..0.25) },
+                        beam: component::Beam
+                    });
+
+                    let mut target_position = Vec2::new(0.0, 0.0);
+                    let mut target_chunk = IVec2::new(0, 0);
+                    let mut target_hit = false;
+ 
+                    'finder: for (list, chunk) in chunk_query.iter_mut() {
+                        if chunk.x - (x as i32 / crate::CHUNK_SIZE) > -1 && chunk.x - (x as i32 / crate::CHUNK_SIZE) < 1 {
+                            if chunk.y - (y as i32 / crate::CHUNK_SIZE) > -1 && chunk.y - (y as i32 / crate::CHUNK_SIZE) < 1{
+                                for list_entity in list.entities.iter() {
+                                    if let Ok((found_entity, _)) = land_query.get_mut(*list_entity) {
+                                        if found_entity.x as i32 == x as i32 && found_entity.y as i32 == y as i32 {
+                                            target_hit = true;
+                                            target_position = Vec2::new(found_entity.x, found_entity.y);
+                                            target_chunk = IVec2::new(chunk.x, chunk.y);
+                                            break 'finder;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if target_hit {
+                        for (list, chunk) in chunk_query.iter_mut() {
+                            if chunk.x - target_chunk.x > -2 && chunk.x - target_chunk.x < 2 {
+                                if chunk.y - target_chunk.y > -2 && chunk.y - target_chunk.y < 2{
+                                    for list_entity in list.entities.iter() {
+                                        if let Ok((found_entity, mut found_colour)) = land_query.get_mut(*list_entity) {
+                                            let distance = ((found_entity.x - target_position.x).powi(2) + (found_entity.y - target_position.y).powi(2)).sqrt();
+                                            if distance <= absorb.radius {
+                                                found_colour.r = BEAM[0];
+                                                found_colour.g = BEAM[1];
+                                                found_colour.b = BEAM[2];
+                                                found_colour.a = BEAM[3];
+                                                commands.entity(*list_entity).insert(component::DeathTimer{ remaining: rng.gen_range(0.05..0.25) });
+                                                resouces.amount += 1;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        println!("{} Resources", resouces.amount);
+                        return;
+                    }
+                }
+            }
+        }
+    }
+}
+
+pub fn action(
+    mut commands: Commands,
+    buttons: Res<Input<MouseButton>>,
+    window: Query<&Window, With<PrimaryWindow>>,
+    mut action_query: Query<(&component::Position, &mut component::Resources, &component::Absorb), With<component::Input>>,
+    mut chunk_query: Query<(&mut component::EntityList, &component::Chunk)>, 
+    mut land_query: Query<(&component::Position, &mut component::Colour), (With<component::Land>, Without<component::Input>, Without<component::Spread>)>
+) {
+    let mut rng = rand::thread_rng();
+    if buttons.just_pressed(MouseButton::Left) {
+        if let Some(cursor_position) = window.single().cursor_position() {
+            for (position, mut resouces, absorb) in action_query.iter_mut() { 
                 let distance = ((cursor_position.x/2.0 - position.x).powi(2) + (cursor_position.y/2.0 - position.y).powi(2)).sqrt();
                 for step in 1..absorb.range as i32 {
                     let x = position.x + (((step as f32) * (cursor_position.x/2.0 - position.x)) / distance);

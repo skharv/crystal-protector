@@ -88,3 +88,13 @@ pub struct Ui;
 pub struct Symbol {
     pub shape: String   
 }
+
+#[derive(Component)]
+pub struct Bar {
+    pub width: i32,
+    pub height: i32,
+    pub percent: f32
+}
+
+#[derive(Component)]
+pub struct Action;
