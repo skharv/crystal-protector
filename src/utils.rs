@@ -1,4 +1,17 @@
-
+pub fn convert_string_to_symbol(
+    input: &String
+    ) -> [bool; crate::SYMBOL_SIZE * crate::SYMBOL_SIZE] {
+    let mut output = [false; crate::SYMBOL_SIZE * crate::SYMBOL_SIZE]; 
+    for i in 0..input.len() {
+        if let Some(input_char) = input.chars().nth(i) {
+            let bools = binary_lookup(input_char);
+            for j in 0..bools.len() {
+                output[i*4 + j] = bools[j];
+            }
+        }
+    }
+    return output;
+}
 
 pub fn binary_lookup(
     input: char
@@ -23,3 +36,5 @@ pub fn binary_lookup(
         _ => [false, false, false, false],
     }
 }
+
+

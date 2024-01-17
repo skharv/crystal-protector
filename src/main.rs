@@ -10,6 +10,7 @@ pub const WIDTH: i32 = 800;
 pub const HEIGHT: i32 = 800;
 pub const SCALE: i32 = 2;
 pub const CHUNK_SIZE: i32 = 16;
+pub const SYMBOL_SIZE: usize = 8;
 
 fn main() {
     let mut app = App::new();
