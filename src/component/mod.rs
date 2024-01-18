@@ -98,3 +98,6 @@ pub struct Bar {
 
 #[derive(Component)]
 pub struct Action;
+
+#[derive(Component)]
+pub struct Resource;

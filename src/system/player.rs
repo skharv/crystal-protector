@@ -139,7 +139,7 @@ pub fn absorb(
     window: Query<&Window, With<PrimaryWindow>>,
     mut absorb_query: Query<(&component::Position, &mut component::Resources, &component::Absorb), With<component::Input>>,
     mut chunk_query: Query<(&mut component::EntityList, &component::Chunk)>, 
-    mut land_query: Query<(&component::Position, &mut component::Colour), (With<component::Land>, Without<component::Input>, Without<component::Spread>, Without<component::DeathTimer>)>
+    mut land_query: Query<(&component::Position, &mut component::Colour, Option<&component::Resource>), (With<component::Land>, Without<component::Input>, Without<component::Spread>, Without<component::DeathTimer>)>
 ) {
     let mut rng = rand::thread_rng();
     if buttons.just_pressed(MouseButton::Right) {
@@ -164,7 +164,7 @@ pub fn absorb(
                         if chunk.x - (x as i32 / crate::CHUNK_SIZE) > -1 && chunk.x - (x as i32 / crate::CHUNK_SIZE) < 1 {
                             if chunk.y - (y as i32 / crate::CHUNK_SIZE) > -1 && chunk.y - (y as i32 / crate::CHUNK_SIZE) < 1{
                                 for list_entity in list.entities.iter() {
-                                    if let Ok((found_entity, _)) = land_query.get_mut(*list_entity) {
+                                    if let Ok((found_entity, _, _)) = land_query.get_mut(*list_entity) {
                                         if found_entity.x as i32 == x as i32 && found_entity.y as i32 == y as i32 {
                                             target_hit = true;
                                             target_position = Vec2::new(found_entity.x, found_entity.y);
@@ -182,7 +182,7 @@ pub fn absorb(
                             if chunk.x - target_chunk.x > -2 && chunk.x - target_chunk.x < 2 {
                                 if chunk.y - target_chunk.y > -2 && chunk.y - target_chunk.y < 2{
                                     for list_entity in list.entities.iter() {
-                                        if let Ok((found_entity, mut found_colour)) = land_query.get_mut(*list_entity) {
+                                        if let Ok((found_entity, mut found_colour, found_resource)) = land_query.get_mut(*list_entity) {
                                             let distance = ((found_entity.x - target_position.x).powi(2) + (found_entity.y - target_position.y).powi(2)).sqrt();
                                             if distance <= absorb.radius {
                                                 found_colour.r = BEAM[0];
@@ -190,7 +190,9 @@ pub fn absorb(
                                                 found_colour.b = BEAM[2];
                                                 found_colour.a = BEAM[3];
                                                 commands.entity(*list_entity).insert(component::DeathTimer{ remaining: rng.gen_range(0.05..0.25) });
-                                                resouces.amount += 1;
+                                                if let Some(_) = found_resource {
+                                                    resouces.amount += 1;
+                                                }
                                             }
                                         }
                                     }

@@ -16,6 +16,7 @@ impl Plugin for GamePlugin {
         app.add_systems(PreStartup, game::setup)
             .add_systems(Startup, noise::generate)
             .add_systems(Startup, ui::generate_symbols)
+            .add_systems(PostStartup, noise::generate_resources)
             .add_systems(PostStartup, spread::spawn)
             .add_systems(PostStartup, player::spawn)
             .add_systems(Update, spread::movement)
