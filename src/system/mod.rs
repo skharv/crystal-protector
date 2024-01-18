@@ -25,10 +25,12 @@ impl Plugin for GamePlugin {
             .add_systems(Update, player::absorb)
             .add_systems(Update, player::update_velocity.after(player::update_input))
             .add_systems(Update, player::update_position.after(player::update_velocity))
+            .add_systems(Update, player::swap_action)
+            .add_systems(Update, player::update_finder)
             .add_systems(Update, beam::timer)
             .add_systems(Update, game::death_timer)
             .add_systems(Update, ui::update_bars)
-            .add_systems(Update, ui::action)
+            .add_systems(Update, ui::update_action)
             .add_systems(Draw, pixel::clear)
             .add_systems(Draw, pixel::draw.after(pixel::clear));
     }

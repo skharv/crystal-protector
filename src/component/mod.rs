@@ -1,5 +1,7 @@
 use bevy::prelude::*;
 
+use crate::utils;
+
 #[derive(Component)]
 pub struct Input {
     pub angle: Option<f32>
@@ -91,15 +93,46 @@ pub struct Symbol {
 
 #[derive(Component)]
 pub struct Bar {
-    pub width: i32,
-    pub height: i32,
     pub percent: f32
 }
 
 #[derive(Component)]
-pub struct Action;
+pub struct Size {
+    pub width: i32,
+    pub height: i32
+}
+
+#[derive(Component)]
+pub struct Action {
+    pub action: utils::Action
+}
 
 #[derive(Component)]
 pub struct Resource {
     pub value: i32
+}
+
+#[derive(Component)]
+pub struct ActionUi;
+
+#[derive(Component)]
+pub struct Bubble {
+    pub radius: i32,
+}
+
+#[derive(Component)]
+pub struct Finder {
+    pub minimum_radius: i32,
+    pub maximum_radius: i32,
+}
+
+#[derive(Component)]
+pub struct Counter {
+    pub target: f32,
+    pub counter: f32
+}
+
+#[derive(Component)]
+pub struct Circle {
+    pub radius: f32,
 }

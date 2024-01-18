@@ -19,17 +19,18 @@ pub fn generate_symbols(
     commands.spawn(bundle::BarBundle {
         position: component::Position { x: 20.0, y: 10.0 },
         colour: component::Colour { r: UI_COLOR[0], g: UI_COLOR[1], b: UI_COLOR[2], a: UI_COLOR[3] },
-        bar: component::Bar { width: 64, height: 8, percent: 25.0 },
+        bar: component::Bar { percent: 25.0 },
+        size: component::Size { width: 64, height: 8 },
         ui: component::Ui
     });
     
     commands.spawn(bundle::SymbolBundle {
         position: component::Position { x: 10.0, y: 20.0 },
         colour: component::Colour { r: UI_COLOR[0], g: UI_COLOR[1], b: UI_COLOR[2], a: UI_COLOR[3] },
-        symbol: component::Symbol { shape: utils::SYMBOL_BULLET.into() },
+        symbol: component::Symbol { shape: utils::SYMBOL_HOUSE.into() },
         ui: component::Ui
-    }).insert(component::Action);
-}
+    }).insert(component::ActionUi);
+ }
 
 pub fn update_bars(
     mut bar_query: Query<&mut component::Bar, With<component::Ui>>,
@@ -42,22 +43,19 @@ pub fn update_bars(
     }
 }
 
-pub fn action(
-    keys: Res<Input<KeyCode>>,
-    mut symbol_query: Query<&mut component::Symbol, (With<component::Ui>, With<component::Action>)>
+pub fn update_action(
+    mut action_query: Query<&mut component::Action, With<component::Input>>,
+    mut symbol_query: Query<&mut component::Symbol, (With<component::Ui>, With<component::ActionUi>)>
 ) {
-    if keys.just_pressed(KeyCode::Tab) {
+    for action in action_query.iter_mut() {
         for mut symbol in symbol_query.iter_mut() {
-            match symbol.shape.as_str() {
-               utils::SYMBOL_HOUSE => symbol.shape = utils::SYMBOL_BULLET.into(),
-               utils::SYMBOL_BULLET => symbol.shape = utils::SYMBOL_BOMB.into(),
-               utils::SYMBOL_BOMB => symbol.shape = utils::SYMBOL_FACE.into(),
-               utils::SYMBOL_FACE => symbol.shape = utils::SYMBOL_FACTORY.into(),
-               utils::SYMBOL_FACTORY => symbol.shape = utils::SYMBOL_BUBBLE.into(),
-               utils::SYMBOL_BUBBLE => symbol.shape = utils::SYMBOL_HOUSE.into(),
-               _ => continue,
+            match action.action {
+                utils::Action::Bomb => symbol.shape = utils::SYMBOL_BOMB.into(),
+                utils::Action::Face => symbol.shape = utils::SYMBOL_FACE.into(),
+                utils::Action::Factory => symbol.shape = utils::SYMBOL_FACTORY.into(),
+                utils::Action::Bubble => symbol.shape = utils::SYMBOL_BUBBLE.into(),
+                utils::Action::House => symbol.shape = utils::SYMBOL_HOUSE.into(),
             }
         }
     }
-
 }

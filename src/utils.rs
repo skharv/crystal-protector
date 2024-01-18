@@ -7,6 +7,14 @@ pub const SYMBOL_FACE: &str = "7E81A5A58199817E";
 pub const SYMBOL_FACTORY: &str = "020A2A2A7E7E7EFF";
 pub const SYMBOL_BUBBLE: &str = "3C4289858581423C";
 
+pub enum Action {
+    House,
+    Bomb,
+    Face,
+    Factory,
+    Bubble
+}
+
 
 pub fn convert_string_to_symbol(
     input: &String

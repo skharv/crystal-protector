@@ -26,6 +26,7 @@ pub struct PlayerBundle{
     pub colour: component::Colour,
     pub input: component::Input,
     pub absorb: component::Absorb,
+    pub action: component::Action,
     pub resources: component::Resources
 }
 
@@ -63,5 +64,15 @@ pub struct BarBundle {
     pub position: component::Position,
     pub colour: component::Colour,
     pub bar: component::Bar,
+    pub size: component::Size,
     pub ui: component::Ui
+}
+
+#[derive(Bundle)]
+pub struct FinderBundle {
+    pub position: component::Position,
+    pub colour: component::Colour,
+    pub circle: component::Circle,
+    pub finder: component::Finder,
+    pub counter: component::Counter
 }
