@@ -5,7 +5,7 @@ use rand::Rng;
 use crate::bundle;
 use crate::component;
 
-const PLAYER: [u8; 4] = [236, 154, 109, 255];
+const PLAYER: [u8; 4] = [255, 194, 122, 255];
 const BEAM: [u8; 4] = [167, 49, 105, 255];
 
 pub fn spawn(
@@ -190,8 +190,8 @@ pub fn absorb(
                                                 found_colour.b = BEAM[2];
                                                 found_colour.a = BEAM[3];
                                                 commands.entity(*list_entity).insert(component::DeathTimer{ remaining: rng.gen_range(0.05..0.25) });
-                                                if let Some(_) = found_resource {
-                                                    resouces.amount += 1;
+                                                if let Some(resource) = found_resource {
+                                                    resouces.amount += resource.value;
                                                 }
                                             }
                                         }

@@ -100,4 +100,6 @@ pub struct Bar {
 pub struct Action;
 
 #[derive(Component)]
-pub struct Resource;
+pub struct Resource {
+    pub value: i32
+}

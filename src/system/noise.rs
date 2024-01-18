@@ -8,22 +8,28 @@ use crate::bundle;
 const DEEP: [u8; 4] = [32, 17, 39, 255];
 const MEDIUM: [u8; 4] = [32, 20, 51, 255];
 const SHALLOW: [u8; 4] = [27, 30, 52, 255];
-const RESOURCE: [u8; 4] = [255, 255, 255, 255];
+const RESOURCE: [u8; 4] = [236, 154, 109, 255];
+const RICH_RESOURCE: [u8; 4] = [217, 98, 107, 255];
 
 pub fn generate(
     mut commands: Commands,
     mut chunk_query: Query<(&mut component::EntityList, &component::Chunk)>,
     ) {
     let mut rng = rand::thread_rng();
-    let mut fbm = Fbm::<Perlin>::new(rng.gen_range(0..10000));
+    let seed = rng.gen_range(0..10000);
+    let mut fbm = Fbm::<Perlin>::new(seed);
     fbm.octaves = rng.gen_range(2..5);
     fbm.frequency = rng.gen_range(0.02..0.04);
 
+    let mut rm = RidgedMulti::<Perlin>::new(seed);
+    rm.octaves = 5;
+    rm.frequency = rng.gen_range(0.02..0.04);
 
     for w in 0..(crate::WIDTH/crate::SCALE) {
         for h in 0..(crate::HEIGHT/crate::SCALE) {
             let noise = fbm.get([w as f64, h as f64]);
-            let colour;
+            let resource_noise = rm.get([w as f64, h as f64]);
+            let mut colour;
 
             if noise < 0.0 {
                 continue;
@@ -33,6 +39,12 @@ pub fn generate(
                 colour = MEDIUM;
             } else {
                 colour = DEEP;
+            }
+            
+            if resource_noise > 0.6 {
+                colour = RICH_RESOURCE;
+            } else if resource_noise > 0.4 {
+                colour = RESOURCE;
             }
                 
             let id = commands.spawn(bundle::LandBundle {
@@ -50,41 +62,15 @@ pub fn generate(
             })
             .id();
 
+            if resource_noise > 0.6 {
+                commands.entity(id).insert(component::Resource{value: 5});
+            } else if resource_noise > 0.4 {
+                commands.entity(id).insert(component::Resource{value: 1});
+            }
+
             for (mut list, position) in chunk_query.iter_mut() {
                 if (w / crate::CHUNK_SIZE) == position.x && (h / crate::CHUNK_SIZE) == position.y {
                     list.entities.push(id);
-                }
-            }
-        }
-    }
-}
-
-pub fn generate_resources (
-    mut commands: Commands,
-    mut land_query: Query<(Entity, &component::Position, &mut component::Colour), With<component::Land>>
-    ) {
-    let mut rng = rand::thread_rng();
-    let mut rm = RidgedMulti::<Perlin>::new(rng.gen_range(0..10000));
-    rm.octaves = 5;
-    rm.frequency = rng.gen_range(0.02..0.04);
-
-
-    for w in 0..(crate::WIDTH/crate::SCALE) {
-        for h in 0..(crate::HEIGHT/crate::SCALE) {
-            let noise = rm.get([w as f64, h as f64]);
-
-            if noise < 0.5 {
-                continue;
-            }
-
-            for (entity, position, mut colour) in land_query.iter_mut() {
-                if w == position.x as i32 && h == position.y as i32 {
-                    colour.r = RESOURCE[0];
-                    colour.g = RESOURCE[1];
-                    colour.b = RESOURCE[2];
-                    colour.a = RESOURCE[3];
-
-                    commands.entity(entity).insert(component::Resource);
                 }
             }
         }
