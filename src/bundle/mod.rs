@@ -19,6 +19,16 @@ pub struct SpreadBundle{
 }
 
 #[derive(Bundle)]
+pub struct AutomatonBundle{
+    pub position: component::Position,
+    pub velocity: component::Velocity,
+    pub speed: component::Speed,
+    pub colour: component::Colour,
+    pub timer: component::DeathTimer,
+    pub automaton: component::Automaton,
+}
+
+#[derive(Bundle)]
 pub struct PlayerBundle{
     pub position: component::Position,
     pub velocity: component::Velocity,

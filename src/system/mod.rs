@@ -30,6 +30,7 @@ impl Plugin for GamePlugin {
             .add_systems(Update, player::action)
             .add_systems(Update, player::update_finder)
             .add_systems(Update, action::bubble)
+            .add_systems(Update, action::automaton)
             .add_systems(Update, beam::timer)
             .add_systems(Update, game::death_timer)
             .add_systems(Update, ui::update_bars)

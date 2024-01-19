@@ -280,6 +280,8 @@ pub fn action(
     //mut chunk_query: Query<(&mut component::EntityList, &component::Chunk)>, 
     //mut land_query: Query<(&component::Position, &mut component::Colour), (With<component::Land>, Without<component::Input>, Without<component::Spread>)>
     ) {
+    let mut rng = rand::thread_rng();
+
     if buttons.just_pressed(MouseButton::Left) {
         if let Some(_) = window.single().cursor_position() {
             for (position, mut resources, action) in action_query.iter_mut() { 
@@ -287,11 +289,24 @@ pub fn action(
                     utils::Action::Bomb => {
                     },
                     utils::Action::Face => {
+                        if resources.amount >= 80 {
+                            let angle = rng.gen_range(0.0..360.0);
+                            let vel = Vec2::new(f32::sin(angle), f32::cos(angle));
+                            commands.spawn(bundle::AutomatonBundle {
+                                position: component::Position{ x: position.x, y: position.y },
+                                velocity: component::Velocity { x: vel.x, y: vel.y },
+                                speed: component::Speed { value: 10.0 },
+                                colour: component::Colour { r: utils::COLOUR_BEAM[0], g: utils::COLOUR_BEAM[1], b: utils::COLOUR_BEAM[2], a: utils::COLOUR_BEAM[3] },
+                                timer: component::DeathTimer { remaining: 60.0 },
+                                automaton: component::Automaton
+                            });
+                            resources.amount -= 80;
+                        }
                     },
                     utils::Action::Factory => {
                     },
                     utils::Action::Bubble => {
-                        if resources.amount >= 100 {
+                        if resources.amount >= 50 {
                             commands.spawn(bundle::BubbleBundle {
                                 position: component::Position{ x: position.x, y: position.y },
                                 circle: component::Circle { radius: 10.0 },
@@ -300,7 +315,7 @@ pub fn action(
                                 bubble: component::Bubble
                             });
 
-                            resources.amount -= 100;
+                            resources.amount -= 50;
                         }
                     },
                     utils::Action::House => {

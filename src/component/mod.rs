@@ -133,3 +133,12 @@ pub struct Circle {
 
 #[derive(Component)]
 pub struct Flicker;
+
+#[derive(Component)]
+pub struct Seek {
+    pub radius: f32,
+    pub entity: Entity
+} 
+
+#[derive(Component)]
+pub struct Automaton;
