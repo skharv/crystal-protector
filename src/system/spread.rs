@@ -3,8 +3,8 @@ use rand::Rng;
 
 use crate::bundle;
 use crate::component;
+use crate::utils;
 
-const SPREAD: [u8; 4] = [148, 197, 172, 255];
 const CAP: usize = 10000;
 
 pub fn spawn(
@@ -27,7 +27,7 @@ pub fn spawn(
         position: component::Position { x: x as f32, y: y as f32 },
         velocity: component::Velocity { x: f32::cos(new_angle), y:f32::sin(new_angle) },
         speed: component::Speed { value: rng.gen_range(5.0..15.0) },
-        colour: component::Colour { r: SPREAD[0], g: SPREAD[1], b: SPREAD[2], a: SPREAD[3] },
+        colour: component::Colour { r: utils::COLOUR_SPREAD[0], g: utils::COLOUR_SPREAD[1], b: utils::COLOUR_SPREAD[2], a: utils::COLOUR_SPREAD[3] },
         spread: component::Spread { duration: 2.0, counter: 0.0 },
         hunger: component::Hunger { duration: 1000.0, counter: 0.0 },
     }).id();

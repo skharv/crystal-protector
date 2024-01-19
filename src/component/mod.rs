@@ -116,23 +116,20 @@ pub struct Resource {
 pub struct ActionUi;
 
 #[derive(Component)]
-pub struct Bubble {
-    pub radius: i32,
-}
+pub struct Bubble;
 
 #[derive(Component)]
 pub struct Finder {
     pub minimum_radius: i32,
     pub maximum_radius: i32,
-}
-
-#[derive(Component)]
-pub struct Counter {
-    pub target: f32,
-    pub counter: f32
+    pub timer_target: f32,
+    pub timer_counter: f32
 }
 
 #[derive(Component)]
 pub struct Circle {
     pub radius: f32,
 }
+
+#[derive(Component)]
+pub struct Flicker;

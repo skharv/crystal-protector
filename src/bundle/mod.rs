@@ -74,5 +74,13 @@ pub struct FinderBundle {
     pub colour: component::Colour,
     pub circle: component::Circle,
     pub finder: component::Finder,
-    pub counter: component::Counter
+}
+
+#[derive(Bundle)]
+pub struct BubbleBundle {
+    pub circle: component::Circle,
+    pub position: component::Position,
+    pub timer: component::DeathTimer,
+    pub colour: component::Colour,
+    pub bubble: component::Bubble
 }

@@ -4,12 +4,7 @@ use rand::Rng;
 
 use crate::component;
 use crate::bundle;
-
-const DEEP: [u8; 4] = [32, 17, 39, 255];
-const MEDIUM: [u8; 4] = [32, 20, 51, 255];
-const SHALLOW: [u8; 4] = [27, 30, 52, 255];
-const RESOURCE: [u8; 4] = [236, 154, 109, 255];
-const RICH_RESOURCE: [u8; 4] = [217, 98, 107, 255];
+use crate::utils;
 
 pub fn generate(
     mut commands: Commands,
@@ -34,17 +29,17 @@ pub fn generate(
             if noise < 0.0 {
                 continue;
             } else if noise < 0.3 {
-                colour = SHALLOW;
+                colour = utils::COLOUR_SHALLOW;
             } else if noise < 0.6 {
-                colour = MEDIUM;
+                colour = utils::COLOUR_MEDIUM;
             } else {
-                colour = DEEP;
+                colour = utils::COLOUR_DEEP;
             }
             
             if resource_noise > 0.6 {
-                colour = RICH_RESOURCE;
+                colour = utils::COLOUR_RICH_RESOURCE;
             } else if resource_noise > 0.4 {
-                colour = RESOURCE;
+                colour = utils::COLOUR_RESOURCE;
             }
                 
             let id = commands.spawn(bundle::LandBundle {

@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use bevy_pixels::prelude::*;
 
+mod action;
 mod beam;
 mod game;
 mod noise;
@@ -26,7 +27,9 @@ impl Plugin for GamePlugin {
             .add_systems(Update, player::update_velocity.after(player::update_input))
             .add_systems(Update, player::update_position.after(player::update_velocity))
             .add_systems(Update, player::swap_action)
+            .add_systems(Update, player::action)
             .add_systems(Update, player::update_finder)
+            .add_systems(Update, action::bubble)
             .add_systems(Update, beam::timer)
             .add_systems(Update, game::death_timer)
             .add_systems(Update, ui::update_bars)

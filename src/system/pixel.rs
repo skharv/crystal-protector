@@ -1,7 +1,6 @@
-use std::f32::consts::PI;
-
 use bevy::prelude::*;
 use bevy_pixels::*;
+use rand::Rng;
 
 use crate::component;
 use crate::utils;
@@ -21,8 +20,10 @@ pub fn draw(
     query: Query<(&component::Position, &component::Colour), (Without<component::Ui>, Without<component::Circle>)>,
     symbol_query: Query<(&component::Position, &component::Colour, &component::Symbol), With<component::Ui>>,
     bar_query: Query<(&component::Position, &component::Colour, &component::Size, &component::Bar), With<component::Ui>>,
-    finder_query: Query<(&component::Position, &component::Colour, &component::Circle)>,
+    circle_query: Query<(&component::Position, &component::Colour, &component::Circle, Option<&component::Bubble>)>,
     ) {
+    let mut rng = rand::thread_rng();
+
     let Ok(mut wrapper) = wrapper_query.get_single_mut() else { return };
     let frame = wrapper.pixels.frame_mut();
 
@@ -50,9 +51,10 @@ pub fn draw(
         }
     }
 
-    for (position, colour, circle) in finder_query.iter() {
+    for (position, colour, circle, bubble) in circle_query.iter() {
         for t in 0..360 {
         let mut new_position = Vec2::new(position.x  + (circle.radius as f32 * f32::sin(t as f32)), position.y + (circle.radius as f32 * f32::cos(t as f32)));
+
         if new_position.x > (crate::WIDTH / crate::SCALE) as f32 {
             new_position.x = (crate::WIDTH / crate::SCALE) as f32;
         }
@@ -65,14 +67,18 @@ pub fn draw(
         if new_position.y < 0.0 {
             new_position.y = 0.0;
         }
-            let index = ((new_position.y as i32 * 4 * (crate::WIDTH/crate::SCALE)) + (new_position.x as i32 * 4)) as usize;
 
-            if index < frame.iter().count() {
-                frame[index] = colour.r;
-                frame[index+1] = colour.g;
-                frame[index+2] = colour.b;
+        let index = ((new_position.y as i32 * 4 * (crate::WIDTH/crate::SCALE)) + (new_position.x as i32 * 4)) as usize;
+        if index < frame.iter().count() {
+            frame[index] = colour.r;
+            frame[index+1] = colour.g;
+            frame[index+2] = colour.b;
+            if let Some(_) = bubble {
+                frame[index+3] = rng.gen_range(0..255);
+            } else {
                 frame[index+3] = colour.a;
             }
+        }
         }
     }
 
