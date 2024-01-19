@@ -49,16 +49,14 @@ pub fn automaton (
                 let x = target_position.x - auto_position.x;
                 let y = target_position.y - auto_position.y;
                 let angle = y.atan2(x);
-                if x as i32 <= 1 && y as i32 <= 1 {
+                if x.abs() < 1.0 && y.abs() < 1.0 {
                     commands.entity(seek.entity).despawn();
                     commands.entity(automaton).remove::<component::Seek>();
-                    println!("got em");
                 }
                 auto_velocity.x = angle.cos();
                 auto_velocity.y = angle.sin();
             } else {
                 commands.entity(automaton).remove::<component::Seek>();
-                println!("no one here");
             }
         } else {
             for (mut list, chunk) in chunk_query.iter_mut() {
@@ -78,7 +76,6 @@ pub fn automaton (
                             }
                         }
                         if let Some(closest_entity) = entity { 
-                            println!("seeking");
                             commands.entity(automaton).insert(component::Seek{ radius: utils::AUTOMATON_SEEK_RANGE, entity: closest_entity });
                         }
                     }

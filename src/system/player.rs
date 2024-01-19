@@ -295,7 +295,7 @@ pub fn action(
                             commands.spawn(bundle::AutomatonBundle {
                                 position: component::Position{ x: position.x, y: position.y },
                                 velocity: component::Velocity { x: vel.x, y: vel.y },
-                                speed: component::Speed { value: 10.0 },
+                                speed: component::Speed { value: 20.0 },
                                 colour: component::Colour { r: utils::COLOUR_BEAM[0], g: utils::COLOUR_BEAM[1], b: utils::COLOUR_BEAM[2], a: utils::COLOUR_BEAM[3] },
                                 timer: component::DeathTimer { remaining: 60.0 },
                                 automaton: component::Automaton
