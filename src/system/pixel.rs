@@ -17,6 +17,7 @@ pub fn clear(
 
 pub fn draw(
     mut wrapper_query: Query<&mut PixelsWrapper>,
+    floor_query: Query<(&component::Position, &component::Colour), With<component::Floor>>,
     query: Query<(&component::Position, &component::Colour), (Without<component::Ui>, Without<component::Circle>)>,
     symbol_query: Query<(&component::Position, &component::Colour, &component::Symbol), With<component::Ui>>,
     bar_query: Query<(&component::Position, &component::Colour, &component::Size, &component::Bar), With<component::Ui>>,
@@ -26,6 +27,16 @@ pub fn draw(
 
     let Ok(mut wrapper) = wrapper_query.get_single_mut() else { return };
     let frame = wrapper.pixels.frame_mut();
+    for (position, colour) in floor_query.iter() {
+        let index = ((position.y as i32 * 4 * (crate::WIDTH/crate::SCALE)) + position.x as i32 * 4) as usize;
+
+        if index < frame.iter().count() {
+            frame[index] = colour.r;
+            frame[index+1] = colour.g;
+            frame[index+2] = colour.b;
+            frame[index+3] = colour.a;
+        }
+    }
 
     for (position, colour) in query.iter() {
         let mut new_position = Vec2::new(position.x, position.y);

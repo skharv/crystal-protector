@@ -65,6 +65,9 @@ pub struct EntityList {
 pub struct Land;
 
 #[derive(Component)]
+pub struct Floor;
+
+#[derive(Component)]
 pub struct Beam;
 
 #[derive(Component)]

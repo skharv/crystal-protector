@@ -38,7 +38,7 @@ pub fn automaton (
     mut commands: Commands,
     mut automaton_query: Query<(Entity, &mut component::Position, &mut component::Velocity, &component::Speed, Option<&mut component::Seek>), (With<component::Automaton>, Without<component::Land>, Without<component::Spread>)>,
     mut chunk_query: Query<(&mut component::EntityList, &component::Chunk)>, 
-    spread_query: Query<&component::Position, (With<component::Spread>, Without<component::Automaton>)>,
+    spread_query: Query<&component::Position, (With<component::Spread>, Without<component::Automaton>, Without<component::Input>)>,
     land_query: Query<&component::Position, (With<component::Land>, Without<component::Spread>, Without<component::Automaton>)>,
     time: Res<Time>
     ) {

@@ -48,6 +48,13 @@ pub struct LandBundle{
 }
 
 #[derive(Bundle)]
+pub struct FloorBundle{
+    pub position: component::Position,
+    pub colour: component::Colour,
+    pub floor: component::Floor
+}
+
+#[derive(Bundle)]
 pub struct ChunkBundle {
     pub position: component::Chunk,
     pub entities: component::EntityList

@@ -297,7 +297,7 @@ pub fn action(
                                 velocity: component::Velocity { x: vel.x, y: vel.y },
                                 speed: component::Speed { value: 20.0 },
                                 colour: component::Colour { r: utils::COLOUR_BEAM[0], g: utils::COLOUR_BEAM[1], b: utils::COLOUR_BEAM[2], a: utils::COLOUR_BEAM[3] },
-                                timer: component::DeathTimer { remaining: 60.0 },
+                                timer: component::DeathTimer { remaining: 30.0 },
                                 automaton: component::Automaton
                             });
                             resources.amount -= 80;
@@ -310,7 +310,7 @@ pub fn action(
                             commands.spawn(bundle::BubbleBundle {
                                 position: component::Position{ x: position.x, y: position.y },
                                 circle: component::Circle { radius: 10.0 },
-                                timer: component::DeathTimer { remaining: 30.0 },
+                                timer: component::DeathTimer { remaining: 60.0 },
                                 colour: component::Colour { r: utils::COLOUR_SPREAD[0], g: utils::COLOUR_SPREAD[1], b: utils::COLOUR_SPREAD[2], a: utils::COLOUR_SPREAD[3] },
                                 bubble: component::Bubble
                             });

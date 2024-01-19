@@ -25,6 +25,27 @@ pub fn generate(
             let noise = fbm.get([w as f64, h as f64]);
             let resource_noise = rm.get([w as f64, h as f64]);
             let mut colour;
+            let floor_colour;
+
+            if noise > -0.3 {
+                floor_colour = utils::COLOUR_DARK_FLOOR;
+            } else {
+                floor_colour = utils::COLOUR_LIGHT_FLOOR;
+            }
+
+            commands.spawn(bundle::FloorBundle {
+                position: component::Position{
+                    x: w as f32,
+                    y: h as f32
+                },
+                colour: component::Colour{
+                    r: floor_colour[0],
+                    g: floor_colour[1],
+                    b: floor_colour[2],
+                    a: floor_colour[3]
+                },
+                floor: component::Floor
+            });
 
             if noise < 0.0 {
                 continue;
@@ -35,6 +56,7 @@ pub fn generate(
             } else {
                 colour = utils::COLOUR_DEEP;
             }
+
             
             if resource_noise > 0.6 {
                 colour = utils::COLOUR_RICH_RESOURCE;

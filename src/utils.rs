@@ -1,4 +1,7 @@
 pub const COLOUR_PLAYER: [u8; 4] = [255, 194, 122, 255];
+pub const COLOUR_DARK_FLOOR: [u8; 4] = [53, 93, 104, 255];
+pub const COLOUR_LIGHT_FLOOR: [u8; 4] = [66, 116, 120, 255];
+//pub const COLOUR_BUBBLE: [u8; 4] = [106, 175, 157, 255];
 pub const COLOUR_BEAM: [u8; 4] = [167, 49, 105, 255];
 pub const COLOUR_DEEP: [u8; 4] = [32, 17, 39, 255];
 pub const COLOUR_MEDIUM: [u8; 4] = [32, 20, 51, 255];
@@ -8,7 +11,6 @@ pub const COLOUR_RICH_RESOURCE: [u8; 4] = [217, 98, 107, 255];
 pub const COLOUR_SPREAD: [u8; 4] = [148, 197, 172, 255];
 
 pub const SYMBOL_RESOURCE: &str = "08181C3C3466663C";
-pub const SYMBOL_BULLET: &str = "70889CBE7F3E1C08";
 pub const SYMBOL_HOUSE: &str = "182442FF425A5A7E";
 pub const SYMBOL_BOMB: &str = "01091670F8F8F870";
 pub const SYMBOL_FACE: &str = "7E81A5A58199817E";
