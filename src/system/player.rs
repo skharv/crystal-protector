@@ -9,17 +9,9 @@ use crate::component;
 pub fn spawn(
     mut commands: Commands,
     mut chunk_query: Query<(&mut component::EntityList, &component::Chunk)>, 
-    land_query: Query<&component::Position, (With<component::Land>, Without<component::Spread>)>,
     ) {
-    let mut rng = rand::thread_rng();
-
-    let mut x = rng.gen_range(0..crate::WIDTH/crate::SCALE);
-    let mut y = rng.gen_range(0..crate::HEIGHT/crate::SCALE);
-
-    while land_query.iter().any(|pos| pos.x as i32 == x as i32 && pos.y as i32 == y as i32) {
-        x = rng.gen_range(0..crate::WIDTH/crate::SCALE);
-        y = rng.gen_range(0..crate::HEIGHT/crate::SCALE);
-    }
+    let x = ((crate::WIDTH/crate::SCALE)as f32 * 0.5) as i32;
+    let y = ((crate::HEIGHT/crate::SCALE)as f32 * 0.5) as i32;
 
     let entity = commands.spawn(bundle::PlayerBundle {
         position: component::Position { x: x as f32, y: y as f32 },
@@ -160,7 +152,7 @@ pub fn absorb(
     window: Query<&Window, With<PrimaryWindow>>,
     mut absorb_query: Query<(&component::Position, &mut component::Resources, &component::Absorb), With<component::Input>>,
     mut chunk_query: Query<(&mut component::EntityList, &component::Chunk)>, 
-    mut land_query: Query<(&component::Position, &mut component::Colour, Option<&component::Resource>), (With<component::Land>, Without<component::Input>, Without<component::Spread>, Without<component::DeathTimer>)>
+    mut land_query: Query<(&component::Position, &mut component::Colour, Option<&component::Resource>, Option<&component::Indestructable>), (With<component::Land>, Without<component::Input>, Without<component::Spread>, Without<component::DeathTimer>)>
     ) {
     let mut rng = rand::thread_rng();
     if buttons.just_pressed(MouseButton::Right) {
@@ -185,7 +177,7 @@ pub fn absorb(
                         if chunk.x - (x as i32 / crate::CHUNK_SIZE) > -1 && chunk.x - (x as i32 / crate::CHUNK_SIZE) < 1 {
                             if chunk.y - (y as i32 / crate::CHUNK_SIZE) > -1 && chunk.y - (y as i32 / crate::CHUNK_SIZE) < 1{
                                 for list_entity in list.entities.iter() {
-                                    if let Ok((found_entity, _, _)) = land_query.get_mut(*list_entity) {
+                                    if let Ok((found_entity, _, _, _)) = land_query.get_mut(*list_entity) {
                                         if found_entity.x as i32 == x as i32 && found_entity.y as i32 == y as i32 {
                                             target_hit = true;
                                             target_position = Vec2::new(found_entity.x, found_entity.y);
@@ -203,17 +195,19 @@ pub fn absorb(
                             if chunk.x - target_chunk.x > -2 && chunk.x - target_chunk.x < 2 {
                                 if chunk.y - target_chunk.y > -2 && chunk.y - target_chunk.y < 2{
                                     for list_entity in list.entities.iter() {
-                                        if let Ok((found_entity, mut found_colour, found_resource)) = land_query.get_mut(*list_entity) {
-                                            let distance = ((found_entity.x - target_position.x).powi(2) + (found_entity.y - target_position.y).powi(2)).sqrt();
-                                            if distance <= absorb.radius {
-                                                found_colour.r = utils::COLOUR_BEAM[0];
-                                                found_colour.g = utils::COLOUR_BEAM[1];
-                                                found_colour.b = utils::COLOUR_BEAM[2];
-                                                found_colour.a = utils::COLOUR_BEAM[3];
-                                                commands.entity(*list_entity).insert(component::DeathTimer{ remaining: rng.gen_range(0.05..0.25) });
-                                                if let Some(resource) = found_resource {
-                                                    if resources.amount < resources.maximum {
-                                                        resources.amount = (resources.amount + resource.value).min(resources.maximum);
+                                        if let Ok((found_entity, mut found_colour, found_resource, found_indestructable)) = land_query.get_mut(*list_entity) {
+                                            if let None = found_indestructable {
+                                                let distance = ((found_entity.x - target_position.x).powi(2) + (found_entity.y - target_position.y).powi(2)).sqrt();
+                                                if distance <= absorb.radius {
+                                                    found_colour.r = utils::COLOUR_BEAM[0];
+                                                    found_colour.g = utils::COLOUR_BEAM[1];
+                                                    found_colour.b = utils::COLOUR_BEAM[2];
+                                                    found_colour.a = utils::COLOUR_BEAM[3];
+                                                    commands.entity(*list_entity).insert(component::DeathTimer{ remaining: rng.gen_range(0.05..0.25) });
+                                                    if let Some(resource) = found_resource {
+                                                        if resources.amount < resources.maximum {
+                                                            resources.amount = (resources.amount + resource.value).min(resources.maximum);
+                                                        }
                                                     }
                                                 }
                                             }

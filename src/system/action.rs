@@ -36,14 +36,14 @@ pub fn bubble (
 
 pub fn automaton (
     mut commands: Commands,
-    mut automaton_query: Query<(Entity, &mut component::Position, &mut component::Velocity, &component::Speed, Option<&mut component::Seek>), (With<component::Automaton>, Without<component::Land>, Without<component::Spread>)>,
+    mut automaton_query: Query<(Entity, &mut component::Position, &mut component::Velocity, &component::Speed, &component::DeathTimer, Option<&mut component::Seek>), (With<component::Automaton>, Without<component::Land>, Without<component::Spread>)>,
     mut chunk_query: Query<(&mut component::EntityList, &component::Chunk)>, 
     spread_query: Query<&component::Position, (With<component::Spread>, Without<component::Automaton>, Without<component::Input>)>,
     land_query: Query<&component::Position, (With<component::Land>, Without<component::Spread>, Without<component::Automaton>)>,
     time: Res<Time>
     ) {
     let mut rng = rand::thread_rng();
-    for (automaton, mut auto_position, mut auto_velocity, auto_speed, auto_seek) in automaton_query.iter_mut() {
+    for (automaton, mut auto_position, mut auto_velocity, auto_speed, auto_death_timer, auto_seek) in automaton_query.iter_mut() {
         if let Some(seek) = auto_seek {
             if let Ok(target_position) = spread_query.get(seek.entity) {
                 let x = target_position.x - auto_position.x;
@@ -75,8 +75,10 @@ pub fn automaton (
                                 }
                             }
                         }
-                        if let Some(closest_entity) = entity { 
-                            commands.entity(automaton).insert(component::Seek{ radius: utils::AUTOMATON_SEEK_RANGE, entity: closest_entity });
+                        if auto_death_timer.remaining > 0.0 {
+                            if let Some(closest_entity) = entity { 
+                                commands.entity(automaton).insert(component::Seek{ radius: utils::AUTOMATON_SEEK_RANGE, entity: closest_entity });
+                            }
                         }
                     }
                 }

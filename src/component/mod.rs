@@ -145,3 +145,6 @@ pub struct Seek {
 
 #[derive(Component)]
 pub struct Automaton;
+
+#[derive(Component)]
+pub struct Indestructable;

@@ -101,3 +101,11 @@ pub struct BubbleBundle {
     pub colour: component::Colour,
     pub bubble: component::Bubble
 }
+
+#[derive(Bundle)]
+pub struct BaseSectionBundle {
+    pub position: component::Position,
+    pub colour: component::Colour,
+    pub land: component::Land,
+    pub indestructable: component::Indestructable,
+}

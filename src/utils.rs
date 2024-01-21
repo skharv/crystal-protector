@@ -9,6 +9,7 @@ pub const COLOUR_SHALLOW: [u8; 4] = [27, 30, 52, 255];
 pub const COLOUR_RESOURCE: [u8; 4] = [236, 154, 109, 255];
 pub const COLOUR_RICH_RESOURCE: [u8; 4] = [217, 98, 107, 255];
 pub const COLOUR_SPREAD: [u8; 4] = [148, 197, 172, 255];
+pub const COLOUR_UI: [u8; 4] = [255, 235, 153, 255];
 
 pub const SYMBOL_RESOURCE: &str = "08181C3C3466663C";
 pub const SYMBOL_HOUSE: &str = "182442FF425A5A7E";
@@ -16,6 +17,7 @@ pub const SYMBOL_BOMB: &str = "01091670F8F8F870";
 pub const SYMBOL_FACE: &str = "7E81A5A58199817E";
 pub const SYMBOL_FACTORY: &str = "020A2A2A7E7E7EFF";
 pub const SYMBOL_BUBBLE: &str = "3C4289858581423C";
+pub const SYMBOL_BASE_SHAPE: &str = "E7818100008181E7";
 
 pub const AUTOMATON_SEEK_RANGE: f32 = 20.0;
 
@@ -41,6 +43,25 @@ pub fn convert_string_to_symbol(
         }
     }
     return output;
+}
+
+pub fn is_position_part_of_symbol(
+    x: i32,
+    y: i32,
+    symbol: [bool; crate::SYMBOL_SIZE * crate::SYMBOL_SIZE]
+    ) -> bool {
+    for i in 0..symbol.len() {
+        if symbol[i] {
+            let symbol_x = (i % crate::SYMBOL_SIZE) as i32;
+            let symbol_y = (i / crate::SYMBOL_SIZE) as i32;
+            
+            if x == symbol_x && y == symbol_y {
+                println!("FOUND SYMBOL AT {}, {}", symbol_x, symbol_y);
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 pub fn binary_lookup(

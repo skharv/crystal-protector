@@ -4,21 +4,19 @@ use crate::bundle;
 use crate::component;
 use crate::utils;
 
-const UI_COLOR: [u8; 4] = [255, 235, 153, 255];
-
 pub fn generate_symbols(
     mut commands: Commands
     ) {
     commands.spawn(bundle::SymbolBundle {
         position: component::Position { x: 10.0, y: 10.0 },
-        colour: component::Colour { r: UI_COLOR[0], g: UI_COLOR[1], b: UI_COLOR[2], a: UI_COLOR[3] },
+        colour: component::Colour { r: utils::COLOUR_UI[0], g: utils::COLOUR_UI[1], b: utils::COLOUR_UI[2], a: utils::COLOUR_UI[3] },
         symbol: component::Symbol { shape: utils::SYMBOL_RESOURCE.into() },
         ui: component::Ui
     });
 
     commands.spawn(bundle::BarBundle {
         position: component::Position { x: 20.0, y: 10.0 },
-        colour: component::Colour { r: UI_COLOR[0], g: UI_COLOR[1], b: UI_COLOR[2], a: UI_COLOR[3] },
+        colour: component::Colour { r: utils::COLOUR_UI[0], g: utils::COLOUR_UI[1], b: utils::COLOUR_UI[2], a: utils::COLOUR_UI[3] },
         bar: component::Bar { percent: 25.0 },
         size: component::Size { width: 64, height: 8 },
         ui: component::Ui
@@ -26,7 +24,7 @@ pub fn generate_symbols(
     
     commands.spawn(bundle::SymbolBundle {
         position: component::Position { x: 10.0, y: 20.0 },
-        colour: component::Colour { r: UI_COLOR[0], g: UI_COLOR[1], b: UI_COLOR[2], a: UI_COLOR[3] },
+        colour: component::Colour { r: utils::COLOUR_UI[0], g: utils::COLOUR_UI[1], b: utils::COLOUR_UI[2], a: utils::COLOUR_UI[3] },
         symbol: component::Symbol { shape: utils::SYMBOL_HOUSE.into() },
         ui: component::Ui
     }).insert(component::ActionUi);
