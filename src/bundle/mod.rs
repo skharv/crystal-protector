@@ -41,6 +41,23 @@ pub struct PlayerBundle{
 }
 
 #[derive(Bundle)]
+pub struct BombBundle{
+    pub position: component::Position,
+    pub velocity: component::Velocity,
+    pub speed: component::Speed,
+    pub colour: component::Colour,
+    pub timer: component::DeathTimer,
+    pub bomb: component::Bomb
+}
+
+#[derive(Bundle)]
+pub struct ShrapnelBundle{
+    pub position: component::Position,
+    pub colour: component::Colour,
+    pub timer:component::DeathTimer,
+}
+
+#[derive(Bundle)]
 pub struct LandBundle{
     pub position: component::Position,
     pub colour: component::Colour,

@@ -18,7 +18,7 @@ pub fn spawn(
     for x in start_x..start_x+crate::SYMBOL_SIZE as i32 {
         for y in start_y..start_y+crate::SYMBOL_SIZE as i32 {
             for (mut list, chunk) in chunk_query.iter_mut() {
-                if chunk.x == (x / crate::CHUNK_SIZE) && chunk.y == (y / crate::CHUNK_SIZE) {
+                if chunk.x == (x / crate::CHUNK_SIZE) as i32 && chunk.y == (y / crate::CHUNK_SIZE) as i32 {
                     let mut id = None;
                     let mut spawn = false;
                     if list.entities.iter().len() <= spawn_counter {

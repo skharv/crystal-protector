@@ -148,3 +148,8 @@ pub struct Automaton;
 
 #[derive(Component)]
 pub struct Indestructable;
+
+#[derive(Component)]
+pub struct Bomb {
+    pub radius: f32
+}

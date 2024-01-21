@@ -1,6 +1,9 @@
+use std::f32::consts::PI;
+
 use bevy::prelude::*;
 use rand::Rng;
 
+use crate::bundle;
 use crate::component;
 use crate::utils;
 
@@ -146,6 +149,103 @@ pub fn automaton (
             }
             auto_position.x = new_position.x;
             auto_position.y = new_position.y;
+        }
+    }
+}
+
+pub fn bomb(
+    mut commands: Commands,
+    mut chunk_query: Query<(&mut component::EntityList, &component::Chunk)>, 
+    mut bomb_query: Query<(Entity, &mut component::Position, &mut component::Speed, &mut component::Velocity, &mut component::DeathTimer, &mut component::Bomb)>,
+    spread_query: Query<&component::Position, (With<component::Spread>, Without<component::Bomb>, Without<component::Input>)>,
+    land_query: Query<&component::Position, (With<component::Land>, Without<component::Spread>, Without<component::Bomb>, Without<component::Indestructable>)>,
+    time: Res<Time>
+    ) {
+    for (entity, mut bomb_position, mut bomb_speed, mut bomb_velocity, mut bomb_timer, bomb_radius) in bomb_query.iter_mut() {
+        let chunk_radius = ((bomb_radius.radius/crate::CHUNK_SIZE as f32).ceil() * 2.0) as i32;
+
+        if bomb_speed.value >= 0.0 {
+            bomb_speed.value -= time.delta_seconds() * 5.0;
+        } else {
+            bomb_speed.value  = 0.0;
+        }
+
+        let mut new_position = Vec2::new(bomb_position.x + (bomb_velocity.x * bomb_speed.value * time.delta_seconds()), bomb_position.y + (bomb_velocity.y * bomb_speed.value * time.delta_seconds()));
+        let mut collide = false;
+        let mut update_position = true;
+
+        if new_position.x > (crate::WIDTH / crate::SCALE) as f32 {
+            new_position.x = (crate::WIDTH / crate::SCALE)as f32;
+            collide = true;
+        }
+        if new_position.x < 0.0 {
+            new_position.x = 0.0;
+            collide = true;
+        }
+        if new_position.y > (crate::HEIGHT / crate::SCALE) as f32 {
+            new_position.y = (crate::HEIGHT / crate::SCALE) as f32;
+            collide = true;
+        }
+        if new_position.y < 0.0 {
+            new_position.y = 0.0;
+            collide = true;
+        }
+
+        for (list, chunk) in chunk_query.iter_mut() {
+            if chunk.x - (new_position.x as i32 / crate::CHUNK_SIZE) > -1 && chunk.x - (new_position.x as i32 / crate::CHUNK_SIZE) < 1 {
+                if chunk.y - (new_position.y as i32 / crate::CHUNK_SIZE) > -1 && chunk.y - (new_position.y as i32 / crate::CHUNK_SIZE) < 1{
+                    for list_entity in list.entities.iter() {
+                        if let Ok(found_entity) = land_query.get(*list_entity) {
+                            if found_entity.x as i32 == new_position.x as i32 && found_entity.y as i32 == new_position.y as i32 {
+                                collide = true;
+                                update_position = false;
+                                bomb_velocity.x = 0.0;
+                                bomb_velocity.y = 0.0;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if collide {
+            bomb_timer.remaining = 0.0;
+        }
+
+        if update_position {
+            bomb_position.x = new_position.x;
+            bomb_position.y = new_position.y;
+        }
+
+        bomb_timer.remaining -= time.delta_seconds();
+        if bomb_timer.remaining <= 0.0 {
+            commands.entity(entity).despawn();
+            commands.spawn(bundle::FinderBundle {
+                position: component::Position{ x: bomb_position.x, y: bomb_position.y },
+                colour: component::Colour { r: utils::COLOUR_BEAM[0], g: utils::COLOUR_BEAM[1], b: utils::COLOUR_BEAM[2], a: utils::COLOUR_BEAM[3] },
+                circle: component::Circle { radius: bomb_radius.radius },
+                finder: component::Finder { minimum_radius: 0, maximum_radius: bomb_radius.radius as i32, timer_target: 0.25 , timer_counter: 0.0 }
+            });
+            for (list, chunk) in chunk_query.iter_mut() {
+                if chunk.x - (bomb_position.x as i32 / crate::CHUNK_SIZE) > -chunk_radius && chunk.x - (bomb_position.x as i32 / crate::CHUNK_SIZE) < chunk_radius {
+                    if chunk.y - (bomb_position.y as i32 / crate::CHUNK_SIZE) > -chunk_radius && chunk.y - (bomb_position.y as i32 / crate::CHUNK_SIZE) < chunk_radius {
+                        for list_entity in list.entities.iter() {
+                            if let Ok(found_entity) = spread_query.get(*list_entity) {
+                                let distance = ((found_entity.x - bomb_position.x).powi(2) + (found_entity.y - bomb_position.y).powi(2)).sqrt();
+                                if distance <= bomb_radius.radius { 
+                                    commands.entity(*list_entity).despawn();
+                                }
+                            }
+                            if let Ok(found_entity) = land_query.get(*list_entity) {
+                                let distance = ((found_entity.x - bomb_position.x).powi(2) + (found_entity.y - bomb_position.y).powi(2)).sqrt();
+                                if distance <= bomb_radius.radius { 
+                                    commands.entity(*list_entity).despawn();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

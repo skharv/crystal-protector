@@ -6,15 +6,15 @@ use crate::utils;
 use crate::bundle;
 use crate::component;
 
+const SPAWN_X: f32 = (crate::WIDTH/crate::SCALE)as f32 * 0.5;
+const SPAWN_Y: f32 = (crate::HEIGHT/crate::SCALE)as f32 * 0.5;
+
 pub fn spawn(
     mut commands: Commands,
     mut chunk_query: Query<(&mut component::EntityList, &component::Chunk)>, 
     ) {
-    let x = ((crate::WIDTH/crate::SCALE)as f32 * 0.5) as i32;
-    let y = ((crate::HEIGHT/crate::SCALE)as f32 * 0.5) as i32;
-
     let entity = commands.spawn(bundle::PlayerBundle {
-        position: component::Position { x: x as f32, y: y as f32 },
+        position: component::Position { x: SPAWN_X, y: SPAWN_Y },
         velocity: component::Velocity { x: 0.0, y: 0.0 },
         speed: component::Speed { value: 20.0 },
         colour: component::Colour { r: utils::COLOUR_PLAYER[0], g: utils::COLOUR_PLAYER[1], b: utils::COLOUR_PLAYER[2], a: utils::COLOUR_PLAYER[3] },
@@ -25,30 +25,15 @@ pub fn spawn(
     }).id();
 
     commands.spawn(bundle::FinderBundle {
-        position: component::Position { x: x as f32, y: y as f32 },
+        position: component::Position { x: SPAWN_X, y: SPAWN_Y },
         colour: component::Colour { r: utils::COLOUR_PLAYER[0], g: utils::COLOUR_PLAYER[1], b: utils::COLOUR_PLAYER[2], a: utils::COLOUR_PLAYER[3] },
         circle: component::Circle { radius: 100.0 },
         finder: component::Finder { minimum_radius: 5, maximum_radius: 100, timer_target: 0.75, timer_counter: 0.0 },
     });
 
     for (mut list, chunk) in chunk_query.iter_mut() {
-        if chunk.x == (x / crate::CHUNK_SIZE) && chunk.y == (y / crate::CHUNK_SIZE) {
+        if chunk.x == (SPAWN_X as i32 / crate::CHUNK_SIZE) && chunk.y == (SPAWN_Y as i32 / crate::CHUNK_SIZE) {
             list.entities.push(entity);
-        }
-    }
-}
-
-pub fn update_finder(
-    mut commands: Commands,
-    mut query: Query<(Entity, &mut component::Finder, &mut component::Circle)>,
-    time: Res<Time>
-    ) {
-    for (entity, mut finder, mut circle) in query.iter_mut() {
-        finder.timer_counter += time.delta_seconds();
-        let percent = (1.0-(finder.timer_counter / finder.timer_target)) * (finder.maximum_radius - finder.minimum_radius) as f32;
-        circle.radius = finder.minimum_radius as f32 + percent;
-        if finder.timer_counter >= finder.timer_target {
-            commands.entity(entity).despawn();
         }
     }
 }
@@ -155,7 +140,7 @@ pub fn absorb(
     mut land_query: Query<(&component::Position, &mut component::Colour, Option<&component::Resource>, Option<&component::Indestructable>), (With<component::Land>, Without<component::Input>, Without<component::Spread>, Without<component::DeathTimer>)>
     ) {
     let mut rng = rand::thread_rng();
-    if buttons.just_pressed(MouseButton::Right) {
+    if buttons.just_pressed(MouseButton::Left) {
         if let Some(cursor_position) = window.single().cursor_position() {
             for (position, mut resources, absorb) in absorb_query.iter_mut() { 
                 let distance = ((cursor_position.x/2.0 - position.x).powi(2) + (cursor_position.y/2.0 - position.y).powi(2)).sqrt();
@@ -270,17 +255,28 @@ pub fn action(
     mut commands: Commands,
     buttons: Res<Input<MouseButton>>,
     window: Query<&Window, With<PrimaryWindow>>,
-    mut action_query: Query<(&component::Position, &mut component::Resources, &component::Action), With<component::Input>>,
+    mut action_query: Query<(&mut component::Position, &mut component::Resources, &component::Speed, &component::Action), With<component::Input>>,
     //mut chunk_query: Query<(&mut component::EntityList, &component::Chunk)>, 
     //mut land_query: Query<(&component::Position, &mut component::Colour), (With<component::Land>, Without<component::Input>, Without<component::Spread>)>
     ) {
     let mut rng = rand::thread_rng();
 
-    if buttons.just_pressed(MouseButton::Left) {
-        if let Some(_) = window.single().cursor_position() {
-            for (position, mut resources, action) in action_query.iter_mut() { 
+    if buttons.just_pressed(MouseButton::Right) {
+        if let Some(cursor_position) = window.single().cursor_position() {
+            for (mut position, mut resources, speed, action) in action_query.iter_mut() { 
                 match action.action {
                     utils::Action::Bomb => {
+                        let bomb_speed = 10.0 + speed.value;
+                        let vel = Vec2::new((cursor_position.x/2.0) - position.x, (cursor_position.y/2.0) - position.y).normalize();
+
+                        commands.spawn(bundle::BombBundle{
+                                position: component::Position{ x: position.x, y: position.y },
+                                velocity: component::Velocity { x: vel.x, y: vel.y},
+                                speed: component::Speed { value: bomb_speed },
+                                colour: component::Colour { r: utils::COLOUR_BEAM[0], g: utils::COLOUR_BEAM[1], b: utils::COLOUR_BEAM[2], a: utils::COLOUR_BEAM[3] },
+                                timer: component::DeathTimer { remaining: 5.0 },
+                                bomb: component::Bomb { radius: 20.0 }
+                        });
                     },
                     utils::Action::Face => {
                         if resources.amount >= 80 {
@@ -308,11 +304,27 @@ pub fn action(
                                 colour: component::Colour { r: utils::COLOUR_SPREAD[0], g: utils::COLOUR_SPREAD[1], b: utils::COLOUR_SPREAD[2], a: utils::COLOUR_SPREAD[3] },
                                 bubble: component::Bubble
                             });
-
                             resources.amount -= 50;
                         }
                     },
                     utils::Action::House => {
+                        if resources.amount >= 100 {
+                            commands.spawn(bundle::FinderBundle {
+                                position: component::Position{ x: position.x, y: position.y },
+                                colour: component::Colour { r: utils::COLOUR_BEAM[0], g: utils::COLOUR_BEAM[1], b: utils::COLOUR_BEAM[2], a: utils::COLOUR_BEAM[3] },
+                                circle: component::Circle { radius: 0.0 },
+                                finder: component::Finder { minimum_radius: 15, maximum_radius: 0, timer_target: 0.25 , timer_counter: 0.0 }
+                            });
+                            position.x = SPAWN_X;
+                            position.y = SPAWN_Y;
+                            commands.spawn(bundle::FinderBundle {
+                                position: component::Position{ x: position.x, y: position.y },
+                                colour: component::Colour { r: utils::COLOUR_BEAM[0], g: utils::COLOUR_BEAM[1], b: utils::COLOUR_BEAM[2], a: utils::COLOUR_BEAM[3] },
+                                circle: component::Circle { radius: 0.0 },
+                                finder: component::Finder { minimum_radius: 0, maximum_radius: 15, timer_target: 0.25 , timer_counter: 0.0 }
+                            });
+                            resources.amount -= 100;
+                        }
                     },
                 }
             }
