@@ -96,7 +96,8 @@ pub struct Symbol {
 
 #[derive(Component)]
 pub struct Bar {
-    pub percent: f32
+    pub percent: f32,
+    pub cost: f32
 }
 
 #[derive(Component)]

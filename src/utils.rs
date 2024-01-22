@@ -21,12 +21,13 @@ pub const SYMBOL_BASE_SHAPE: &str = "E7818100008181E7";
 
 pub const AUTOMATON_SEEK_RANGE: f32 = 20.0;
 
+#[derive(Clone, Copy)]
 pub enum Action {
-    House,
-    Bomb,
-    Face,
-    Factory,
-    Bubble
+    House = 100,
+    Bomb = 75,
+    Face = 80,
+    Factory = 150,
+    Bubble = 50
 }
 
 

@@ -111,20 +111,33 @@ pub fn draw(
     }
 
     for (position, colour, size, bar) in bar_query.iter() {
-        
         for w in 0..size.width {
-        for h in 0..size.height {
-            if w == 0 || h == 0 || w == size.width-1 || h == size.height-1 || ((w as f32/size.width as f32)*100.0 <= bar.percent) {
-            let index = (((position.y as i32 + h) * 4 * (crate::WIDTH/crate::SCALE)) + (position.x as i32 + w) * 4) as usize;
+            for h in 0..size.height {
+                if w == 0 || h == 0 || w == size.width-1 || h == size.height-1 {
+                    let index = (((position.y as i32 + h) * 4 * (crate::WIDTH/crate::SCALE)) + (position.x as i32 + w) * 4) as usize;
 
-            if index < frame.iter().count() {
-                frame[index] = colour.r;
-                frame[index+1] = colour.g;
-                frame[index+2] = colour.b;
-                frame[index+3] = colour.a;
+                    if index < frame.iter().count() {
+                        frame[index] = colour.r;
+                        frame[index+1] = colour.g;
+                        frame[index+2] = colour.b;
+                        frame[index+3] = colour.a;
+                    }
+                } else if (w as f32/size.width as f32)*100.0 <= bar.percent {
+                    let index = (((position.y as i32 + h) * 4 * (crate::WIDTH/crate::SCALE)) + (position.x as i32 + w) * 4) as usize;
+                    let mut new_colour: [u8; 4] = [colour.r, colour.g, colour.b, colour.a];
+
+                    if (w as f32/size.width as f32)*100.0 >= (bar.percent - bar.cost) {
+                        new_colour = utils::COLOUR_BEAM;
+                    }
+
+                    if index < frame.iter().count() {
+                        frame[index] = new_colour[0];
+                        frame[index+1] = new_colour[1];
+                        frame[index+2] = new_colour[2];
+                        frame[index+3] = new_colour[3];
+                    }
+                }
             }
-            }
-        }
         }
     }
 }

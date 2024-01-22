@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
+use bevy_pixels::pixels::wgpu::util;
 use rand::Rng;
 
 use crate::utils;
@@ -266,20 +267,23 @@ pub fn action(
             for (mut position, mut resources, speed, action) in action_query.iter_mut() { 
                 match action.action {
                     utils::Action::Bomb => {
-                        let bomb_speed = 10.0 + speed.value;
-                        let vel = Vec2::new((cursor_position.x/2.0) - position.x, (cursor_position.y/2.0) - position.y).normalize();
+                        if resources.amount >= utils::Action::Bomb as i32 {
+                            let bomb_speed = 10.0 + speed.value;
+                            let vel = Vec2::new((cursor_position.x/2.0) - position.x, (cursor_position.y/2.0) - position.y).normalize();
 
-                        commands.spawn(bundle::BombBundle{
+                            commands.spawn(bundle::BombBundle{
                                 position: component::Position{ x: position.x, y: position.y },
                                 velocity: component::Velocity { x: vel.x, y: vel.y},
                                 speed: component::Speed { value: bomb_speed },
                                 colour: component::Colour { r: utils::COLOUR_BEAM[0], g: utils::COLOUR_BEAM[1], b: utils::COLOUR_BEAM[2], a: utils::COLOUR_BEAM[3] },
                                 timer: component::DeathTimer { remaining: 5.0 },
                                 bomb: component::Bomb { radius: 20.0 }
-                        });
+                            });
+                            resources.amount -= utils::Action::Bomb as i32;
+                        }
                     },
                     utils::Action::Face => {
-                        if resources.amount >= 80 {
+                        if resources.amount >= utils::Action::Face as i32 {
                             let angle = rng.gen_range(0.0..360.0);
                             let vel = Vec2::new(f32::sin(angle), f32::cos(angle));
                             commands.spawn(bundle::AutomatonBundle {
@@ -290,13 +294,16 @@ pub fn action(
                                 timer: component::DeathTimer { remaining: 30.0 },
                                 automaton: component::Automaton
                             });
-                            resources.amount -= 80;
+                            resources.amount -= utils::Action::Face as i32;
                         }
                     },
                     utils::Action::Factory => {
+                        if resources.amount >= utils::Action::Factory as i32 {
+                            resources.amount -= utils::Action::Factory as i32;
+                        }
                     },
                     utils::Action::Bubble => {
-                        if resources.amount >= 50 {
+                        if resources.amount >= utils::Action::Bubble as i32 {
                             commands.spawn(bundle::BubbleBundle {
                                 position: component::Position{ x: position.x, y: position.y },
                                 circle: component::Circle { radius: 10.0 },
@@ -304,11 +311,11 @@ pub fn action(
                                 colour: component::Colour { r: utils::COLOUR_SPREAD[0], g: utils::COLOUR_SPREAD[1], b: utils::COLOUR_SPREAD[2], a: utils::COLOUR_SPREAD[3] },
                                 bubble: component::Bubble
                             });
-                            resources.amount -= 50;
+                            resources.amount -= utils::Action::Bubble as i32;
                         }
                     },
                     utils::Action::House => {
-                        if resources.amount >= 100 {
+                        if resources.amount >= utils::Action::House as i32 {
                             commands.spawn(bundle::FinderBundle {
                                 position: component::Position{ x: position.x, y: position.y },
                                 colour: component::Colour { r: utils::COLOUR_BEAM[0], g: utils::COLOUR_BEAM[1], b: utils::COLOUR_BEAM[2], a: utils::COLOUR_BEAM[3] },
@@ -323,7 +330,7 @@ pub fn action(
                                 circle: component::Circle { radius: 0.0 },
                                 finder: component::Finder { minimum_radius: 0, maximum_radius: 15, timer_target: 0.25 , timer_counter: 0.0 }
                             });
-                            resources.amount -= 100;
+                            resources.amount -= utils::Action::House as i32;
                         }
                     },
                 }
