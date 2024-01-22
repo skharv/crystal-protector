@@ -11,6 +11,7 @@ pub const HEIGHT: i32 = 800;
 pub const SCALE: i32 = 2;
 pub const CHUNK_SIZE: i32 = 16;
 pub const SYMBOL_SIZE: usize = 8;
+pub const MENU_SIZE: i32 = 16;
 
 fn main() {
     let mut app = App::new();
@@ -36,7 +37,7 @@ fn main() {
     .add_plugins(PixelsPlugin {
         primary_window: Some(PixelsOptions{
         width: (WIDTH/SCALE) as u32,
-        height: (WIDTH/SCALE) as u32,
+        height: (HEIGHT/SCALE) as u32,
         scale_factor: SCALE as f32,
         auto_resize_buffer: true,
         auto_resize_surface: false,

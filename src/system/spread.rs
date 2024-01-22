@@ -15,11 +15,11 @@ pub fn spawn(
     let mut rng = rand::thread_rng();
 
     let mut x = rng.gen_range(0..crate::WIDTH/crate::SCALE);
-    let mut y = rng.gen_range(0..crate::HEIGHT/crate::SCALE);
+    let mut y = rng.gen_range(0..crate::HEIGHT/crate::SCALE) - crate::MENU_SIZE ;
 
     while land_query.iter().any(|pos| pos.x as i32 == x as i32 && pos.y as i32 == y as i32) {
         x = rng.gen_range(0..crate::WIDTH/crate::SCALE);
-        y = rng.gen_range(0..crate::HEIGHT/crate::SCALE);
+        y = rng.gen_range(0..crate::HEIGHT/crate::SCALE) - crate::MENU_SIZE ;
     }
 
     let new_angle = rng.gen_range(0.0..360.0); 
@@ -53,15 +53,15 @@ pub fn movement(
         let mut update_angle = false;
 
         if new_position.x > (crate::WIDTH / crate::SCALE) as f32 {
-            new_position.x = (crate::WIDTH / crate::SCALE)as f32;
+            new_position.x = (crate::WIDTH / crate::SCALE)as f32 - 1.0;
             update_angle = true;
         }
         if new_position.x < 0.0 {
             new_position.x = 0.0;
             update_angle = true;
         }
-        if new_position.y > (crate::HEIGHT / crate::SCALE) as f32 {
-            new_position.y = (crate::HEIGHT / crate::SCALE) as f32;
+        if new_position.y > ((crate::HEIGHT / crate::SCALE) - crate::MENU_SIZE) as f32 {
+            new_position.y = ((crate::HEIGHT / crate::SCALE) - crate::MENU_SIZE) as f32 - 1.0;
             update_angle = true;
         }
         if new_position.y < 0.0 {

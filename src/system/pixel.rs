@@ -5,14 +5,12 @@ use rand::Rng;
 use crate::component;
 use crate::utils;
 
-const CLEAR: [u8; 4] = [53, 93, 104, 255];
-
 pub fn clear(
     mut wrapper_query: Query<&mut PixelsWrapper>
     ) {
     let Ok(mut wrapper) = wrapper_query.get_single_mut() else { return };
     let frame = wrapper.pixels.frame_mut();
-    frame.copy_from_slice(&CLEAR.repeat(frame.len()/4));
+    frame.copy_from_slice(&utils::COLOUR_DEEP.repeat(frame.len()/4));
 }
 
 pub fn draw(

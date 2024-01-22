@@ -1,5 +1,3 @@
-use std::f32::consts::PI;
-
 use bevy::prelude::*;
 use rand::Rng;
 
@@ -92,15 +90,15 @@ pub fn automaton (
         let mut update_position = true;
 
         if new_position.x > (crate::WIDTH / crate::SCALE) as f32 {
-            new_position.x = (crate::WIDTH / crate::SCALE)as f32;
+            new_position.x = (crate::WIDTH / crate::SCALE)as f32 - 1.0;
             update_angle = true;
         }
         if new_position.x < 0.0 {
             new_position.x = 0.0;
             update_angle = true;
         }
-        if new_position.y > (crate::HEIGHT / crate::SCALE) as f32 {
-            new_position.y = (crate::HEIGHT / crate::SCALE) as f32;
+        if new_position.y > ((crate::HEIGHT / crate::SCALE) - crate::MENU_SIZE) as f32 {
+            new_position.y = ((crate::HEIGHT / crate::SCALE) - crate::MENU_SIZE) as f32 - 1.0;
             update_angle = true;
         }
         if new_position.y < 0.0 {
@@ -175,15 +173,15 @@ pub fn bomb(
         let mut update_position = true;
 
         if new_position.x > (crate::WIDTH / crate::SCALE) as f32 {
-            new_position.x = (crate::WIDTH / crate::SCALE)as f32;
+            new_position.x = (crate::WIDTH / crate::SCALE)as f32 - 1.0;
             collide = true;
         }
         if new_position.x < 0.0 {
             new_position.x = 0.0;
             collide = true;
         }
-        if new_position.y > (crate::HEIGHT / crate::SCALE) as f32 {
-            new_position.y = (crate::HEIGHT / crate::SCALE) as f32;
+        if new_position.y > ((crate::HEIGHT / crate::SCALE) - crate::MENU_SIZE) as f32 {
+            new_position.y = ((crate::HEIGHT / crate::SCALE) - crate::MENU_SIZE) as f32 - 1.0;
             collide = true;
         }
         if new_position.y < 0.0 {

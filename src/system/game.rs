@@ -7,7 +7,7 @@ pub fn setup(
     mut commands: Commands
     ) {
     for x in 0..((crate::WIDTH / crate::SCALE) / crate::CHUNK_SIZE) {
-        for y in 0..((crate::HEIGHT / crate::SCALE) / crate::CHUNK_SIZE) {
+        for y in 0..(((crate::HEIGHT / crate::SCALE) - crate::MENU_SIZE) / crate::CHUNK_SIZE) {
             commands.spawn(bundle::ChunkBundle {
                 position: component::Chunk {
                     x,

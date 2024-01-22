@@ -1,6 +1,5 @@
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
-use bevy_pixels::pixels::wgpu::util;
 use rand::Rng;
 
 use crate::utils;
@@ -63,13 +62,13 @@ pub fn update_position(
         let mut new_position = Vec2::new(position.x + (velocity.x * time.delta_seconds()), position.y + (velocity.y * time.delta_seconds()));
 
         if new_position.x > (crate::WIDTH / crate::SCALE) as f32 {
-            new_position.x = (crate::WIDTH / crate::SCALE)as f32;
+            new_position.x = (crate::WIDTH / crate::SCALE)as f32 - 1.0;
         }
         if new_position.x < 0.0 {
             new_position.x = 0.0;
         }
-        if new_position.y > (crate::HEIGHT / crate::SCALE) as f32 {
-            new_position.y = (crate::HEIGHT / crate::SCALE) as f32;
+        if new_position.y > ((crate::HEIGHT / crate::SCALE) - crate::MENU_SIZE) as f32 {
+            new_position.y = ((crate::HEIGHT / crate::SCALE) - crate::MENU_SIZE) as f32 - 1.0;
         }
         if new_position.y < 0.0 {
             new_position.y = 0.0;

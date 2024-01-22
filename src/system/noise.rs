@@ -21,7 +21,7 @@ pub fn generate(
     rm.frequency = rng.gen_range(0.02..0.04);
 
     for w in 0..(crate::WIDTH/crate::SCALE) {
-        for h in 0..(crate::HEIGHT/crate::SCALE) {
+        for h in 0..(crate::HEIGHT/crate::SCALE) - crate::MENU_SIZE {
             let noise = fbm.get([w as f64, h as f64]);
             let resource_noise = rm.get([w as f64, h as f64]);
             let mut colour;
