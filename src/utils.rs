@@ -62,7 +62,6 @@ pub fn is_position_part_of_symbol(
             let symbol_y = (i / crate::SYMBOL_SIZE) as i32;
             
             if x == symbol_x && y == symbol_y {
-                println!("FOUND SYMBOL AT {}, {}", symbol_x, symbol_y);
                 return true;
             }
         }

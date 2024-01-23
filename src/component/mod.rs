@@ -157,5 +157,5 @@ pub struct Bomb {
 
 #[derive(Component)]
 pub struct Crystal {
-    pub id: i32
+    pub id: i32,
 }

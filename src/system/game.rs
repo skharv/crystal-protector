@@ -25,8 +25,9 @@ pub fn setup(
 pub fn spawn_crystals(
     mut commands: Commands,
     mut chunk_query: Query<(&mut component::EntityList, &component::Chunk)>, 
-    land_query: Query<&component::Position, (With<component::Land>, Without<component::Spread>)>,
+    land_query: Query<&component::Position, (With<component::Land>, Without<component::Spread>, Without<component::Floor>)>,
     ) {
+    let mut count = 0;
     for index in 0..utils::CRYSTAL_COUNT {
         let start_x;
         let start_y;
@@ -55,6 +56,8 @@ pub fn spawn_crystals(
         let inner_crystal_list = utils::convert_string_to_symbol(&utils::SYMBOL_INNER_CRYSTAL.to_string());
         let mut spawn_counter = 0;
 
+        println!("going");
+
         for x in start_x..start_x+crate::SYMBOL_SIZE as i32 {
             for y in start_y..start_y+crate::SYMBOL_SIZE as i32 {
                 for (mut list, chunk) in chunk_query.iter_mut() {
@@ -73,6 +76,7 @@ pub fn spawn_crystals(
                                     crystal: component::Crystal { id: index },
                                     land: component::Land
                                 }).id());
+                                println!("{0}, {1} asdf", count, index);
                                 spawn = true;
                             }
                         } else {
@@ -92,7 +96,10 @@ pub fn spawn_crystals(
                                         if found_entity.x as i32 == x && found_entity.y as i32 == y {
                                             commands.entity(*list_entity).despawn();
                                         }
+                                        count = count + 1;
+                                        println!("{0}, {1}", count, index);
                                         spawn = true;
+                                    break;
                                     }
                                 }
                             }
@@ -139,24 +146,26 @@ pub fn update_finder(
 }
 
 pub fn depower_crystal(
-    mut query: Query<(&component::Crystal, &mut component::Colour)>
+    mut commands: Commands,
+    mut query: Query<(Entity, &component::Crystal, &mut component::Colour)>
     ) {
     for index in 0..utils::CRYSTAL_COUNT {
         let mut counter = 0;
-        for (crystal, _) in query.iter() {
+        for (_, crystal, _) in query.iter() {
             if crystal.id == index {
                 counter = counter + 1;
             }
         }
         if counter < utils::CRYSTAL_SECTIONS {
-        for (crystal, mut colour) in query.iter_mut() {
-            if crystal.id == index {
-                colour.r = utils::COLOUR_SHALLOW[0];
-                colour.g = utils::COLOUR_SHALLOW[1];
-                colour.b = utils::COLOUR_SHALLOW[2];
-                colour.a = utils::COLOUR_SHALLOW[3];
+            for (entity, crystal, mut colour) in query.iter_mut() {
+                if crystal.id == index {
+                    colour.r = utils::COLOUR_SHALLOW[0];
+                    colour.g = utils::COLOUR_SHALLOW[1];
+                    colour.b = utils::COLOUR_SHALLOW[2];
+                    colour.a = utils::COLOUR_SHALLOW[3];
+                }
+                commands.entity(entity).remove::<component::Crystal>();
             }
-        }
         }
     }
 }

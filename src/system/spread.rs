@@ -3,7 +3,6 @@ use rand::Rng;
 
 use crate::bundle;
 use crate::component;
-use crate::component::Crystal;
 use crate::utils;
 
 const CAP: usize = 10000;
@@ -11,7 +10,7 @@ const CAP: usize = 10000;
 pub fn spawn(
     mut commands: Commands,
     mut chunk_query: Query<(&mut component::EntityList, &component::Chunk)>, 
-    land_query: Query<&component::Position, (With<component::Land>, Without<component::Spread>)>,
+    land_query: Query<&component::Position, (With<component::Land>, Without<component::Spread>, Without<component::Input>)>,
     ) {
     let mut rng = rand::thread_rng();
 
@@ -44,7 +43,7 @@ pub fn movement(
     mut commands: Commands,
     mut spread_query: Query<(Entity, &mut component::Position, &mut component::Velocity, &mut component::Spread, &mut component::Hunger, &component::Speed), With<component::Spread>>,
     mut chunk_query: Query<(&mut component::EntityList, &component::Chunk)>, 
-    land_query: Query<(&component::Position, Option<&component::Indestructable>), (With<component::Land>, Without<component::Spread>)>,
+    land_query: Query<(&component::Position, Option<&component::Indestructable>), (With<component::Land>, Without<component::Spread>, Without<component::Input>)>,
     time: Res<Time>
     ) {
     let mut rng = rand::thread_rng();

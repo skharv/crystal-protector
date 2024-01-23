@@ -156,7 +156,7 @@ pub fn bomb(
     mut chunk_query: Query<(&mut component::EntityList, &component::Chunk)>, 
     mut bomb_query: Query<(Entity, &mut component::Position, &mut component::Speed, &mut component::Velocity, &mut component::DeathTimer, &mut component::Bomb)>,
     spread_query: Query<&component::Position, (With<component::Spread>, Without<component::Bomb>, Without<component::Input>)>,
-    land_query: Query<&component::Position, (With<component::Land>, Without<component::Spread>, Without<component::Bomb>, Without<component::Indestructable>)>,
+    land_query: Query<&component::Position, (With<component::Land>, Without<component::Spread>, Without<component::Bomb>, Without<component::Indestructable>, Without<component::Floor>)>,
     time: Res<Time>
     ) {
     for (entity, mut bomb_position, mut bomb_speed, mut bomb_velocity, mut bomb_timer, bomb_radius) in bomb_query.iter_mut() {
