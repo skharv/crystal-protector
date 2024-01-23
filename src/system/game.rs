@@ -27,7 +27,6 @@ pub fn spawn_crystals(
     mut chunk_query: Query<(&mut component::EntityList, &component::Chunk)>, 
     land_query: Query<&component::Position, (With<component::Land>, Without<component::Spread>, Without<component::Floor>)>,
     ) {
-    let mut count = 0;
     for index in 0..utils::CRYSTAL_COUNT {
         let start_x;
         let start_y;
@@ -54,9 +53,6 @@ pub fn spawn_crystals(
 
         let outer_crystal_list = utils::convert_string_to_symbol(&utils::SYMBOL_OUTER_CRYSTAL.to_string());
         let inner_crystal_list = utils::convert_string_to_symbol(&utils::SYMBOL_INNER_CRYSTAL.to_string());
-        let mut spawn_counter = 0;
-
-        println!("going");
 
         for x in start_x..start_x+crate::SYMBOL_SIZE as i32 {
             for y in start_y..start_y+crate::SYMBOL_SIZE as i32 {
@@ -64,50 +60,29 @@ pub fn spawn_crystals(
                     if chunk.x == (x / crate::CHUNK_SIZE) as i32 && chunk.y == (y / crate::CHUNK_SIZE) as i32 {
                         let mut id = None;
                         let mut spawn = false;
-                        if list.entities.iter().len() <= spawn_counter {
-                            if utils::is_position_part_of_symbol(x - start_x, y - start_y, outer_crystal_list) {
-                                let mut colour = utils::COLOUR_OUTER_CRYSTAL;
-                                if utils::is_position_part_of_symbol(x - start_x, y - start_y, inner_crystal_list) {
-                                    colour = utils::COLOUR_INNER_CRYSTAL;
-                                }
-                                id = Some(commands.spawn(bundle::CrystalSectionBundle {
-                                    position: component::Position { x: x as f32, y: y as f32 },
-                                    colour: component::Colour { r: colour[0], g: colour[1], b: colour[2], a: colour[3] },
-                                    crystal: component::Crystal { id: index },
-                                    land: component::Land
-                                }).id());
-                                println!("{0}, {1} asdf", count, index);
-                                spawn = true;
+                        if utils::is_position_part_of_symbol(x - start_x, y - start_y, outer_crystal_list) {
+                            let mut colour = utils::COLOUR_OUTER_CRYSTAL;
+                            if utils::is_position_part_of_symbol(x - start_x, y - start_y, inner_crystal_list) {
+                                colour = utils::COLOUR_INNER_CRYSTAL;
                             }
-                        } else {
+                            id = Some(commands.spawn(bundle::CrystalSectionBundle {
+                                position: component::Position { x: x as f32, y: y as f32 },
+                                colour: component::Colour { r: colour[0], g: colour[1], b: colour[2], a: colour[3] },
+                                crystal: component::Crystal { id: index },
+                                land: component::Land
+                            }).id());
                             for list_entity in list.entities.iter() {
                                 if let Ok(found_entity) = land_query.get(*list_entity) {
-                                    if utils::is_position_part_of_symbol(x - start_x, y - start_y, outer_crystal_list) {
-                                        let mut colour = utils::COLOUR_OUTER_CRYSTAL;
-                                        if utils::is_position_part_of_symbol(x - start_x, y - start_y, inner_crystal_list) {
-                                            colour = utils::COLOUR_INNER_CRYSTAL;
-                                        }
-                                        id = Some(commands.spawn(bundle::CrystalSectionBundle {
-                                            position: component::Position { x: x as f32, y: y as f32 },
-                                            colour: component::Colour { r: colour[0], g: colour[1], b: colour[2], a: colour[3] },
-                                            crystal: component::Crystal { id: index },
-                                            land: component::Land
-                                        }).id());
-                                        if found_entity.x as i32 == x && found_entity.y as i32 == y {
-                                            commands.entity(*list_entity).despawn();
-                                        }
-                                        count = count + 1;
-                                        println!("{0}, {1}", count, index);
-                                        spawn = true;
-                                    break;
+                                    if found_entity.x as i32 == x && found_entity.y as i32 == y {
+                                        commands.entity(*list_entity).despawn();
                                     }
                                 }
+                                spawn = true;
                             }
                         }
                         if spawn {
                             if let Some(entity) = id {
                                 list.entities.push(entity);
-                                spawn_counter = spawn_counter + 1;
                             }
                         }
                     }
@@ -152,6 +127,7 @@ pub fn depower_crystal(
     for index in 0..utils::CRYSTAL_COUNT {
         let mut counter = 0;
         for (_, crystal, _) in query.iter() {
+            println!("first {}", crystal.id);
             if crystal.id == index {
                 counter = counter + 1;
             }
@@ -159,12 +135,13 @@ pub fn depower_crystal(
         if counter < utils::CRYSTAL_SECTIONS {
             for (entity, crystal, mut colour) in query.iter_mut() {
                 if crystal.id == index {
+                    println!("second {}", crystal.id);
                     colour.r = utils::COLOUR_SHALLOW[0];
                     colour.g = utils::COLOUR_SHALLOW[1];
                     colour.b = utils::COLOUR_SHALLOW[2];
                     colour.a = utils::COLOUR_SHALLOW[3];
+                    commands.entity(entity).remove::<component::Crystal>();
                 }
-                commands.entity(entity).remove::<component::Crystal>();
             }
         }
     }
