@@ -7,7 +7,7 @@ use crate::bundle;
 use crate::component;
 
 const SPAWN_X: f32 = (crate::WIDTH/crate::SCALE)as f32 * 0.5;
-const SPAWN_Y: f32 = (crate::HEIGHT/crate::SCALE)as f32 * 0.5;
+const SPAWN_Y: f32 = ((crate::HEIGHT/crate::SCALE) - crate::MENU_SIZE) as f32 * 0.5;
 
 pub fn spawn(
     mut commands: Commands,
@@ -256,8 +256,6 @@ pub fn action(
     buttons: Res<Input<MouseButton>>,
     window: Query<&Window, With<PrimaryWindow>>,
     mut action_query: Query<(&mut component::Position, &mut component::Resources, &component::Speed, &component::Action), With<component::Input>>,
-    //mut chunk_query: Query<(&mut component::EntityList, &component::Chunk)>, 
-    //mut land_query: Query<(&component::Position, &mut component::Colour), (With<component::Land>, Without<component::Input>, Without<component::Spread>)>
     ) {
     let mut rng = rand::thread_rng();
 

@@ -18,7 +18,7 @@ pub fn draw(
     floor_query: Query<(&component::Position, &component::Colour), With<component::Floor>>,
     query: Query<(&component::Position, &component::Colour), (Without<component::Ui>, Without<component::Circle>)>,
     symbol_query: Query<(&component::Position, &component::Colour, &component::Symbol), With<component::Ui>>,
-    bar_query: Query<(&component::Position, &component::Colour, &component::Size, &component::Bar), With<component::Ui>>,
+    bar_query: Query<(&component::Position, &component::Colour, &component::Size, Option<&component::Bar>), With<component::Ui>>,
     circle_query: Query<(&component::Position, &component::Colour, &component::Circle, Option<&component::Bubble>)>,
     ) {
     let mut rng = rand::thread_rng();
@@ -120,19 +120,22 @@ pub fn draw(
                         frame[index+2] = colour.b;
                         frame[index+3] = colour.a;
                     }
-                } else if (w as f32/size.width as f32)*100.0 <= bar.percent {
-                    let index = (((position.y as i32 + h) * 4 * (crate::WIDTH/crate::SCALE)) + (position.x as i32 + w) * 4) as usize;
-                    let mut new_colour: [u8; 4] = [colour.r, colour.g, colour.b, colour.a];
+                } 
+                if let Some(data) = bar {
+                    if (w as f32/size.width as f32)*100.0 <= data.percent {
+                        let index = (((position.y as i32 + h) * 4 * (crate::WIDTH/crate::SCALE)) + (position.x as i32 + w) * 4) as usize;
+                        let mut new_colour: [u8; 4] = [colour.r, colour.g, colour.b, colour.a];
 
-                    if (w as f32/size.width as f32)*100.0 >= (bar.percent - bar.cost) {
-                        new_colour = utils::COLOUR_BEAM;
-                    }
+                        if (w as f32/size.width as f32)*100.0 >= (data.percent - data.cost) {
+                            new_colour = utils::COLOUR_BEAM;
+                        }
 
-                    if index < frame.iter().count() {
-                        frame[index] = new_colour[0];
-                        frame[index+1] = new_colour[1];
-                        frame[index+2] = new_colour[2];
-                        frame[index+3] = new_colour[3];
+                        if index < frame.iter().count() {
+                            frame[index] = new_colour[0];
+                            frame[index+1] = new_colour[1];
+                            frame[index+2] = new_colour[2];
+                            frame[index+3] = new_colour[3];
+                        }
                     }
                 }
             }

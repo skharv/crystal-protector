@@ -65,6 +65,14 @@ pub struct LandBundle{
 }
 
 #[derive(Bundle)]
+pub struct CrystalSectionBundle{
+    pub position: component::Position,
+    pub colour: component::Colour,
+    pub crystal: component::Crystal,
+    pub land: component::Land
+}
+
+#[derive(Bundle)]
 pub struct FloorBundle{
     pub position: component::Position,
     pub colour: component::Colour,
@@ -98,6 +106,14 @@ pub struct BarBundle {
     pub position: component::Position,
     pub colour: component::Colour,
     pub bar: component::Bar,
+    pub size: component::Size,
+    pub ui: component::Ui
+}
+
+#[derive(Bundle)]
+pub struct RectBundle {
+    pub position: component::Position,
+    pub colour: component::Colour,
     pub size: component::Size,
     pub ui: component::Ui
 }

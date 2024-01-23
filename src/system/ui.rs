@@ -23,16 +23,15 @@ pub fn generate_symbols(
     });
     
     commands.spawn(bundle::SymbolBundle {
-        position: component::Position { x: ((crate::WIDTH/crate::SCALE) - 12) as f32, y: ((crate::HEIGHT/crate::SCALE) - 12) as f32 },
+        position: component::Position { x: 84.0, y: ((crate::HEIGHT/crate::SCALE) - 12) as f32 },
         colour: component::Colour { r: utils::COLOUR_UI[0], g: utils::COLOUR_UI[1], b: utils::COLOUR_UI[2], a: utils::COLOUR_UI[3] },
         symbol: component::Symbol { shape: utils::SYMBOL_HOUSE.into() },
         ui: component::Ui
     }).insert(component::ActionUi);
     
-    commands.spawn(bundle::BarBundle {
+    commands.spawn(bundle::RectBundle {
         position: component::Position { x: 0.0, y: ((crate::HEIGHT/crate::SCALE) - crate::MENU_SIZE) as f32 },
         colour: component::Colour { r: utils::COLOUR_UI[0], g: utils::COLOUR_UI[1], b: utils::COLOUR_UI[2], a: utils::COLOUR_UI[3] },
-        bar: component::Bar { percent: 0.0, cost: 0.0 },
         size: component::Size { width: (crate::WIDTH/crate::SCALE), height: crate::MENU_SIZE },
         ui: component::Ui
     });

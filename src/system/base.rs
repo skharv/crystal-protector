@@ -10,7 +10,7 @@ pub fn spawn(
     land_query: Query<&component::Position, (With<component::Land>, Without<component::Spread>)>,
     ) {
     let start_x = (((crate::WIDTH / crate::SCALE) as f32 / 2.0) - crate::SYMBOL_SIZE as f32 / 2.0) as i32;
-    let start_y = (((crate::HEIGHT / crate::SCALE) as f32 / 2.0) - crate::SYMBOL_SIZE as f32 / 2.0) as i32;
+    let start_y = ((((crate::HEIGHT / crate::SCALE) - crate::MENU_SIZE) as f32 / 2.0) - crate::SYMBOL_SIZE as f32 / 2.0) as i32;
 
     let bool_list = utils::convert_string_to_symbol(&utils::SYMBOL_BASE_SHAPE.to_string());
     let mut spawn_counter = 0;

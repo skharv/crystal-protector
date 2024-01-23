@@ -3,6 +3,7 @@ use rand::Rng;
 
 use crate::bundle;
 use crate::component;
+use crate::component::Crystal;
 use crate::utils;
 
 const CAP: usize = 10000;

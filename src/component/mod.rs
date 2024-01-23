@@ -154,3 +154,8 @@ pub struct Indestructable;
 pub struct Bomb {
     pub radius: f32
 }
+
+#[derive(Component)]
+pub struct Crystal {
+    pub id: i32
+}
