@@ -30,7 +30,7 @@ pub fn setup(
 pub fn spawn_crystals(
     mut commands: Commands,
     mut chunk_query: Query<(&mut component::EntityList, &component::Chunk)>, 
-    land_query: Query<&component::Position, (With<component::Land>, Without<component::Spread>, Without<component::Floor>)>,
+    land_query: Query<&component::Position, (With<component::Land>, Without<component::Spread>, Without<component::Floor>, Without<component::Dying>)>,
     ) {
     for index in 0..utils::CRYSTAL_COUNT {
         let start_x;
@@ -79,7 +79,7 @@ pub fn spawn_crystals(
                             for list_entity in list.entities.iter() {
                                 if let Ok(found_entity) = land_query.get(*list_entity) {
                                     if found_entity.x as i32 == x && found_entity.y as i32 == y {
-                                        commands.entity(*list_entity).despawn();
+                                        commands.entity(*list_entity).insert(component::Dying);
                                     }
                                 }
                                 spawn = true;
@@ -99,20 +99,20 @@ pub fn spawn_crystals(
 
 pub fn death_timer(
     mut commands: Commands,
-    mut query: Query<(Entity, &mut component::DeathTimer), Without<component::Bomb>>,
+    mut query: Query<(Entity, &mut component::DeathTimer), (Without<component::Bomb>, Without<component::Dying>)>,
     time: Res<Time>
     ) {
     for (entity, mut timer) in query.iter_mut() {
         timer.remaining -= time.delta_seconds();
         if timer.remaining <= 0.0 {
-            commands.entity(entity).despawn();
+            commands.entity(entity).insert(component::Dying);
         }
     }
 }
 
 pub fn update_finder(
     mut commands: Commands,
-    mut query: Query<(Entity, &mut component::Finder, &mut component::Circle)>,
+    mut query: Query<(Entity, &mut component::Finder, &mut component::Circle), Without<component::Dying>>,
     time: Res<Time>
     ) {
     for (entity, mut finder, mut circle) in query.iter_mut() {
@@ -120,15 +120,15 @@ pub fn update_finder(
         let percent = (1.0-(finder.timer_counter / finder.timer_target)) * (finder.maximum_radius - finder.minimum_radius) as f32;
         circle.radius = finder.minimum_radius as f32 + percent;
         if finder.timer_counter >= finder.timer_target {
-            commands.entity(entity).despawn();
+            commands.entity(entity).insert(component::Dying);
         }
     }
 }
 
 pub fn depower_crystal(
     mut commands: Commands,
-    mut query: Query<(Entity, &component::Crystal, &mut component::Colour), (Without<component::Ui>, Without<component::Input>)>,
-    ui_query: Query<(Entity, &component::Crystal), With<component::Ui>>,
+    mut query: Query<(Entity, &component::Crystal, &mut component::Colour), (Without<component::Ui>, Without<component::Input>, Without<component::Dying>)>,
+    ui_query: Query<(Entity, &component::Crystal), (With<component::Ui>, Without<component::Dying>)>,
     asset_server: Res<AssetServer>
     ) {
     for index in 0..utils::CRYSTAL_COUNT {
@@ -151,14 +151,14 @@ pub fn depower_crystal(
             for (ui_entity, ui_crystal) in ui_query.iter() {
                 if ui_crystal.id == index {
                     commands.spawn(AudioBundle{
-                        source: asset_server.load("./shatter.ogg"),
+                        source: asset_server.load("shatter.ogg"),
                         settings: PlaybackSettings{
                             mode: PlaybackMode::Despawn,
                             ..default()
                         },
                         ..default()
                     });
-                    commands.entity(ui_entity).despawn();
+                    commands.entity(ui_entity).insert(component::Dying);
                     return;
                 }
             }
@@ -168,17 +168,17 @@ pub fn depower_crystal(
 
 pub fn lose_game(
     mut commands: Commands,
-    ui_query: Query<(Entity, &component::Crystal), With<component::Ui>>,
-    bgm_query: Query<(Entity, &AudioSink), With<component::Music>>,
+    ui_query: Query<(Entity, &component::Crystal), (With<component::Ui>, Without<component::Dying>)>,
+    bgm_query: Query<(Entity, &AudioSink), (With<component::Music>, Without<component::Dying>)>,
     asset_server: Res<AssetServer>,
     mut app_state: ResMut<NextState<AppState>>
     ) {
     if ui_query.iter().count() == 0 {
         if let Ok((entity, sink)) = bgm_query.get_single(){
             sink.stop();
-            commands.entity(entity).despawn();
+            commands.entity(entity).insert(component::Dying);
             commands.spawn(AudioBundle{
-                source: asset_server.load("./lose.ogg"),
+                source: asset_server.load("lose.ogg"),
                 settings: PlaybackSettings{
                     mode: PlaybackMode::Despawn,
                     ..default()
@@ -217,17 +217,17 @@ pub fn start_action(
 
 pub fn win_game(
     mut commands: Commands,
-    query: Query<Entity, With<component::Spread>>,
-    bgm_query: Query<(Entity, &AudioSink), With<component::Music>>,
+    query: Query<Entity, (With<component::Spread>, Without<component::Dying>)>,
+    bgm_query: Query<(Entity, &AudioSink), (With<component::Music>, Without<component::Dying>)>,
     mut app_state: ResMut<NextState<AppState>>,
     asset_server: Res<AssetServer>
     ) {
     if query.iter().count() == 0 {
         if let Ok((entity, sink)) = bgm_query.get_single(){
             sink.stop();
-            commands.entity(entity).despawn();
+            commands.entity(entity).insert(component::Dying);
             commands.spawn(AudioBundle{
-                source: asset_server.load("./win.ogg"),
+                source: asset_server.load("win.ogg"),
                 settings: PlaybackSettings{
                     mode: PlaybackMode::Despawn,
                     ..default()
@@ -237,4 +237,13 @@ pub fn win_game(
         }
         app_state.set(AppState::Win);
     }
+}
+
+pub fn despawn_dying(
+    mut commands: Commands,
+    query: Query<Entity, (With<component::Dying>, Without<component::Input>)>
+    ) {
+    query.for_each(|e| {
+        commands.entity(e).despawn();
+    })
 }

@@ -54,6 +54,7 @@ impl Plugin for GamePlugin {
                     ui::update_action
                     ).run_if(in_state(AppState::Game))
                         )
+            .add_systems(Update, game::despawn_dying)
             .add_systems(Draw, (
                     pixel::clear, 
                     pixel::draw.after(pixel::clear).run_if(in_state(AppState::Game)),

@@ -35,7 +35,7 @@ pub fn spawn(
                         for list_entity in list.entities.iter() {
                             if let Ok(found_entity) = land_query.get(*list_entity) {
                                 if found_entity.x as i32 == x && found_entity.y as i32 == y {
-                                    commands.entity(*list_entity).despawn();
+                                    commands.entity(*list_entity).insert(component::Dying);
                                 }
                                 if utils::is_position_part_of_symbol(x - start_x, y - start_y, bool_list) {
                                     id = Some(commands.spawn(bundle::BaseSectionBundle {

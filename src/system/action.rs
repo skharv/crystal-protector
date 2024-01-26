@@ -51,10 +51,10 @@ pub fn automaton (
                 let y = target_position.y - auto_position.y;
                 let angle = y.atan2(x);
                 if x.abs() < 1.0 && y.abs() < 1.0 {
-                    commands.entity(seek.entity).despawn();
+                    commands.entity(seek.entity).insert(component::Dying);
                     commands.entity(automaton).remove::<component::Seek>();
                     commands.spawn(AudioBundle{
-                        source: asset_server.load("./robot_attack.ogg"),
+                        source: asset_server.load("robot_attack.ogg"),
                         settings: PlaybackSettings{
                             mode: PlaybackMode::Despawn,
                             ..default()
@@ -226,10 +226,10 @@ pub fn bomb(
 
         bomb_timer.remaining -= time.delta_seconds();
         if bomb_timer.remaining <= 0.0 {
-            commands.entity(entity).despawn();
+            commands.entity(entity).insert(component::Dying);
             commands.spawn(
                 AudioBundle{
-                    source: asset_server.load("./bomb.ogg"),
+                    source: asset_server.load("bomb.ogg"),
                     settings: PlaybackSettings{
                         mode: PlaybackMode::Despawn,
                         ..default()
@@ -249,13 +249,13 @@ pub fn bomb(
                             if let Ok(found_entity) = spread_query.get(*list_entity) {
                                 let distance = ((found_entity.x - bomb_position.x).powi(2) + (found_entity.y - bomb_position.y).powi(2)).sqrt();
                                 if distance <= bomb_radius.radius { 
-                                    commands.entity(*list_entity).despawn();
+                                    commands.entity(*list_entity).insert(component::Dying);
                                 }
                             }
                             if let Ok(found_entity) = land_query.get(*list_entity) {
                                 let distance = ((found_entity.x - bomb_position.x).powi(2) + (found_entity.y - bomb_position.y).powi(2)).sqrt();
                                 if distance <= bomb_radius.radius { 
-                                    commands.entity(*list_entity).despawn();
+                                    commands.entity(*list_entity).insert(component::Dying);
                                 }
                             }
                         }

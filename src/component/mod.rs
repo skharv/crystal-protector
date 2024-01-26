@@ -171,3 +171,6 @@ pub struct Music;
 
 #[derive(Component)]
 pub struct Start;
+
+#[derive(Component)]
+pub struct Dying;

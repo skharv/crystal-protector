@@ -1,4 +1,4 @@
-use bevy::{prelude::*, window::WindowResolution, diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin}};
+use bevy::{prelude::*, window::WindowResolution, diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin}, asset::AssetMetaCheck};
 use bevy_pixels::{PixelsPlugin, PixelsOptions};
 
 mod bundle;
@@ -27,6 +27,7 @@ pub static mut STATE: AppState = AppState::Start;
 fn main() {
     let mut app = App::new();
 
+    app.insert_resource(AssetMetaCheck::Never);
     app.add_plugins(DefaultPlugins.set(WindowPlugin {
         primary_window: Some(Window {
             title: "spreading".into(),
@@ -44,6 +45,9 @@ fn main() {
         }),
         close_when_requested: true,
         exit_condition: bevy::window::ExitCondition::OnPrimaryClosed,
+    }).set(AssetPlugin {
+        mode: AssetMode::Unprocessed,
+        ..default()
     }))
     .add_plugins(PixelsPlugin {
         primary_window: Some(PixelsOptions{

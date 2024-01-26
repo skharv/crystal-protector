@@ -40,7 +40,7 @@ pub fn spawn(
 }
 
 pub fn update_velocity(
-    mut query: Query<(&mut component::Velocity, &component::Input, &component::Speed)>
+    mut query: Query<(&mut component::Velocity, &component::Input, &component::Speed), Without<component::Dying>>
     ) {
     for (mut velocity, input, speed) in query.iter_mut() {
         if let Some(direction) = input.angle {
@@ -56,7 +56,7 @@ pub fn update_velocity(
 pub fn update_position(
     mut query: Query<(&mut component::Position, &component::Velocity), With<component::Input>>,
     mut chunk_query: Query<(&mut component::EntityList, &component::Chunk)>, 
-    land_query: Query<&component::Position, (With<component::Land>, Without<component::Input>, Without<component::Spread>)>,
+    land_query: Query<&component::Position, (With<component::Land>, Without<component::Input>, Without<component::Spread>, Without<component::Dying>)>,
     time: Res<Time>
     ) {
     for (mut position, velocity) in query.iter_mut() {
@@ -136,16 +136,16 @@ pub fn absorb(
     mut commands: Commands,
     buttons: Res<Input<MouseButton>>,
     window: Query<&Window, With<PrimaryWindow>>,
-    mut absorb_query: Query<(&component::Position, &mut component::Resources, &component::Absorb), With<component::Input>>,
+    mut absorb_query: Query<(&component::Position, &mut component::Resources, &component::Absorb), (With<component::Input>, Without<component::Dying>)>,
     mut chunk_query: Query<(&mut component::EntityList, &component::Chunk)>, 
-    mut land_query: Query<(&component::Position, &mut component::Colour, Option<&component::Resource>, Option<&component::Indestructable>), (With<component::Land>, Without<component::Input>, Without<component::Spread>, Without<component::DeathTimer>)>,
+    mut land_query: Query<(&component::Position, &mut component::Colour, Option<&component::Resource>, Option<&component::Indestructable>), (With<component::Land>, Without<component::Input>, Without<component::Spread>, Without<component::DeathTimer>, Without<component::Dying>)>,
     asset_server: Res<AssetServer>
     ) {
     let mut rng = rand::thread_rng();
     if buttons.just_pressed(MouseButton::Left) {
         if let Some(cursor_position) = window.single().cursor_position() {
             commands.spawn(AudioBundle {
-                        source: asset_server.load("./laser.ogg"),
+                        source: asset_server.load("laser.ogg"),
                         settings: PlaybackSettings{
                             mode: PlaybackMode::Despawn,
                             volume: Volume::new_relative(0.25),
@@ -282,6 +282,16 @@ pub fn action(
                                 bomb: component::Bomb { radius: 20.0 }
                             });
                             resources.amount -= utils::Action::Bomb as i32;
+                       } else {
+                            commands.spawn(AudioBundle{
+                                source: asset_server.load("error.ogg"),
+                                settings: PlaybackSettings {
+                                    mode: PlaybackMode::Despawn,
+                                    volume: Volume::new_relative(0.5),
+                                    ..default()
+                                },
+                                ..default()
+                            });
                         }
                     },
                     utils::Action::Face => {
@@ -297,7 +307,7 @@ pub fn action(
                                 automaton: component::Automaton
                             },
                             AudioBundle{
-                                source: asset_server.load("./robot.ogg"),
+                                source: asset_server.load("robot.ogg"),
                                 settings: PlaybackSettings{
                                     mode: PlaybackMode::Remove,
                                     ..default()
@@ -305,6 +315,16 @@ pub fn action(
                                 ..default()
                             }));
                             resources.amount -= utils::Action::Face as i32;
+                       } else {
+                            commands.spawn(AudioBundle{
+                                source: asset_server.load("error.ogg"),
+                                settings: PlaybackSettings {
+                                    mode: PlaybackMode::Despawn,
+                                    volume: Volume::new_relative(0.5),
+                                    ..default()
+                                },
+                                ..default()
+                            });
                         }
                     },
                     utils::Action::Bubble => {
@@ -317,7 +337,7 @@ pub fn action(
                                 bubble: component::Bubble
                             },
                             AudioBundle{
-                                source: asset_server.load("./bubble.ogg"),
+                                source: asset_server.load("bubble.ogg"),
                                 settings: PlaybackSettings{
                                     mode: PlaybackMode::Remove,
                                     ..default()
@@ -325,6 +345,16 @@ pub fn action(
                                 ..default()
                             }));
                             resources.amount -= utils::Action::Bubble as i32;
+                       } else {
+                            commands.spawn(AudioBundle{
+                                source: asset_server.load("error.ogg"),
+                                settings: PlaybackSettings {
+                                    mode: PlaybackMode::Despawn,
+                                    volume: Volume::new_relative(0.5),
+                                    ..default()
+                                },
+                                ..default()
+                            });
                         }
                     },
                     utils::Action::House => {
@@ -344,7 +374,7 @@ pub fn action(
                                 finder: component::Finder { minimum_radius: 0, maximum_radius: 15, timer_target: 0.25 , timer_counter: 0.0 }
                             });
                             commands.spawn(AudioBundle{
-                                source: asset_server.load("./teleport.ogg"),
+                                source: asset_server.load("teleport.ogg"),
                                 settings: PlaybackSettings {
                                     mode: PlaybackMode::Despawn,
                                     ..default()
@@ -352,7 +382,17 @@ pub fn action(
                                 ..default()
                             });
                             resources.amount -= utils::Action::House as i32;
-                        }
+                       } else {
+                            commands.spawn(AudioBundle{
+                                source: asset_server.load("error.ogg"),
+                                settings: PlaybackSettings {
+                                    mode: PlaybackMode::Despawn,
+                                    volume: Volume::new_relative(0.5),
+                                    ..default()
+                                },
+                                ..default()
+                            });
+                       }
                     },
                 }
             }

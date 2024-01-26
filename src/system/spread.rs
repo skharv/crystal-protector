@@ -44,9 +44,9 @@ pub fn spawn(
 
 pub fn movement(
     mut commands: Commands,
-    mut spread_query: Query<(Entity, &mut component::Position, &mut component::Velocity, &mut component::Spread, &mut component::Hunger, &component::Speed), With<component::Spread>>,
+    mut spread_query: Query<(Entity, &mut component::Position, &mut component::Velocity, &mut component::Spread, &mut component::Hunger, &component::Speed), (With<component::Spread>, Without<component::Dying>)>,
     mut chunk_query: Query<(&mut component::EntityList, &component::Chunk)>, 
-    land_query: Query<(&component::Position, Option<&component::Indestructable>), (With<component::Land>, Without<component::Spread>, Without<component::Input>)>,
+    land_query: Query<(&component::Position, Option<&component::Indestructable>), (With<component::Land>, Without<component::Spread>, Without<component::Input>, Without<component::Dying>)>,
     time: Res<Time>
     ) {
     let mut rng = rand::thread_rng();
@@ -85,7 +85,7 @@ pub fn movement(
                                 if let None = found_indestructable {
                                     spread.counter += 0.2;
                                     hunger.counter = 0.0;
-                                    commands.entity(*list_entity).despawn();
+                                    commands.entity(*list_entity).insert(component::Dying);
                                 }
                                 break;
                             }
@@ -127,7 +127,7 @@ pub fn movement(
 
 pub fn spread(
     mut commands: Commands,
-    mut spread_query: Query<(Entity, &component::Position, &component::Colour, &component::Hunger, &mut component::Spread), Without<component::Input>>,
+    mut spread_query: Query<(Entity, &component::Position, &component::Colour, &component::Hunger, &mut component::Spread), (Without<component::Input>, Without<component::Dying>)>,
     mut chunk_query: Query<(&mut component::EntityList, &component::Chunk)>, 
     time: Res<Time>,
     asset_server: Res<AssetServer>
@@ -155,7 +155,7 @@ pub fn spread(
                     hunger: component::Hunger { duration: new_hunger, counter: new_hunger * 0.5 }
                 },
                 AudioBundle{
-                    source: asset_server.load("./birth.ogg"),
+                    source: asset_server.load("birth.ogg"),
                     settings: PlaybackSettings{
                         mode: PlaybackMode::Remove,
                         ..default()
@@ -171,7 +171,7 @@ pub fn spread(
                 }
 
                 if cap_met {
-                    commands.entity(parent).despawn();
+                    commands.entity(parent).insert(component::Dying);
                 } else {
                     spread.duration *= 1.8;
                 }
@@ -182,13 +182,13 @@ pub fn spread(
 
 pub fn hunger (
     mut commands: Commands,
-    mut spread_query: Query<(Entity, &mut component::Hunger), Without<component::Input>>,
+    mut spread_query: Query<(Entity, &mut component::Hunger), (Without<component::Input>, Without<component::Dying>)>,
     time: Res<Time>
     ) {
     for (entity, mut hunger) in spread_query.iter_mut() {
         hunger.counter += time.delta_seconds();
         if hunger.counter >= hunger.duration {
-            commands.entity(entity).despawn();
+            commands.entity(entity).insert(component::Dying);
         }
     }
 }
