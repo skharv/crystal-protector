@@ -218,8 +218,7 @@ pub fn swap_action(
             match action.action {
                 utils::Action::House => action.action = utils::Action::Bomb,
                 utils::Action::Bomb => action.action = utils::Action::Face,
-                utils::Action::Face => action.action = utils::Action::Factory,
-                utils::Action::Factory => action.action = utils::Action::Bubble,
+                utils::Action::Face => action.action = utils::Action::Bubble,
                 utils::Action::Bubble => action.action = utils::Action::House,
             }
         }
@@ -240,11 +239,6 @@ pub fn swap_action(
         }
     }
     if keys.just_pressed(KeyCode::Key4) {
-        for mut action in action_query.iter_mut() {
-            action.action = utils::Action::Factory;
-        }
-    }
-    if keys.just_pressed(KeyCode::Key5) {
         for mut action in action_query.iter_mut() {
             action.action = utils::Action::Bubble;
         }
@@ -292,11 +286,6 @@ pub fn action(
                                 automaton: component::Automaton
                             });
                             resources.amount -= utils::Action::Face as i32;
-                        }
-                    },
-                    utils::Action::Factory => {
-                        if resources.amount >= utils::Action::Factory as i32 {
-                            resources.amount -= utils::Action::Factory as i32;
                         }
                     },
                     utils::Action::Bubble => {

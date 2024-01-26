@@ -51,13 +51,6 @@ pub struct BombBundle{
 }
 
 #[derive(Bundle)]
-pub struct ShrapnelBundle{
-    pub position: component::Position,
-    pub colour: component::Colour,
-    pub timer:component::DeathTimer,
-}
-
-#[derive(Bundle)]
 pub struct LandBundle{
     pub position: component::Position,
     pub colour: component::Colour,

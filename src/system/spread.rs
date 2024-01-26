@@ -158,7 +158,6 @@ pub fn spread(
                 }
 
                 if cap_met {
-                    println!("too many");
                     commands.entity(parent).despawn();
                 } else {
                     spread.duration *= 2.0;
@@ -176,7 +175,6 @@ pub fn hunger (
     for (entity, mut hunger) in spread_query.iter_mut() {
         hunger.counter += time.delta_seconds();
         if hunger.counter >= hunger.duration {
-            println!("Died from starvation");
             commands.entity(entity).despawn();
         }
     }

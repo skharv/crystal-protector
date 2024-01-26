@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use bevy_pixels::prelude::*;
+use crate::AppState;
 
 mod action;
 mod base;
@@ -16,31 +17,46 @@ pub struct GamePlugin;
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(PreStartup, game::setup)
-            .add_systems(Startup, noise::generate)
-            .add_systems(Startup, ui::generate_symbols)
-            .add_systems(PostStartup, base::spawn)
-            .add_systems(PostStartup, game::spawn_crystals)
-            .add_systems(PostStartup, spread::spawn.after(base::spawn))
-            .add_systems(PostStartup, player::spawn.after(base::spawn))
-            .add_systems(Update, spread::movement)
-            .add_systems(Update, spread::spread)
-            .add_systems(Update, spread::hunger)
-            .add_systems(Update, player::update_input)
-            .add_systems(Update, player::absorb)
-            .add_systems(Update, player::update_velocity.after(player::update_input))
-            .add_systems(Update, player::update_position.after(player::update_velocity))
-            .add_systems(Update, player::swap_action)
-            .add_systems(Update, player::action)
-            .add_systems(Update, action::bubble)
-            .add_systems(Update, action::automaton)
-            .add_systems(Update, action::bomb)
-            .add_systems(Update, beam::timer)
-            .add_systems(Update, game::death_timer)
-            .add_systems(Update, game::update_finder)
-            .add_systems(Update, game::depower_crystal)
-            .add_systems(Update, ui::update_bars)
-            .add_systems(Update, ui::update_action)
-            .add_systems(Draw, pixel::clear)
-            .add_systems(Draw, pixel::draw.after(pixel::clear));
+            .add_systems(Startup, (
+                    noise::generate, ui::generate_symbols
+                        ))
+            .add_systems(PostStartup, (
+                    base::spawn,
+                    game::spawn_crystals,
+                        ))
+            .add_systems(PostStartup, 
+                         (spread::spawn, player::spawn).after(base::spawn)
+                    )
+            .add_systems(Update, game::start_action.run_if(in_state(AppState::Start)))
+            .add_systems(Update, (
+                    spread::movement,
+                    spread::spread,
+                    spread::hunger,
+                    player::update_input,
+                    player::absorb,
+                    player::update_velocity.after(player::update_input),
+                    player::update_position.after(player::update_velocity),
+                    player::swap_action,
+                    player::action,
+                    action::bubble,
+                    action::automaton,
+                    action::bomb,
+                    beam::timer,
+                    game::death_timer,
+                    game::update_finder,
+                    game::depower_crystal,
+                    game::lose_game,
+                    game::win_game,
+                    ui::update_bars,
+                    ui::update_action
+                    ).run_if(in_state(AppState::Game))
+                        )
+            .add_systems(Draw, (
+                    pixel::clear, 
+                    pixel::draw.after(pixel::clear).run_if(in_state(AppState::Game)),
+                    pixel::draw_victory.after(pixel::clear).run_if(in_state(AppState::Win)),
+                    pixel::draw_defeat.after(pixel::clear).run_if(in_state(AppState::Loss))
+                    ));
+
     }
 }

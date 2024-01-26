@@ -8,6 +8,20 @@ pub fn generate_symbols(
     mut commands: Commands
     ) {
     commands.spawn(bundle::SymbolBundle {
+        position: component::Position { x: (((crate::WIDTH/crate::SCALE) / 2) - crate::SYMBOL_SIZE as i32) as f32, y: (((crate::HEIGHT/crate::SCALE) / 2) - crate::SYMBOL_SIZE as i32) as f32 },
+        colour: component::Colour { r: utils::COLOUR_UI[0], g: utils::COLOUR_UI[1], b: utils::COLOUR_UI[2], a: utils::COLOUR_UI[3] },
+        symbol: component::Symbol { shape: utils::SYMBOL_SAD.into() },
+        ui: component::Ui
+    }).insert(component::Defeat);
+
+    commands.spawn(bundle::SymbolBundle {
+        position: component::Position { x: (((crate::WIDTH/crate::SCALE) / 2) - crate::SYMBOL_SIZE as i32) as f32, y: (((crate::HEIGHT/crate::SCALE) / 2) - crate::SYMBOL_SIZE as i32) as f32 },
+        colour: component::Colour { r: utils::COLOUR_UI[0], g: utils::COLOUR_UI[1], b: utils::COLOUR_UI[2], a: utils::COLOUR_UI[3] },
+        symbol: component::Symbol { shape: utils::SYMBOL_HAPPY.into() },
+        ui: component::Ui
+    }).insert(component::Victory);
+
+    commands.spawn(bundle::SymbolBundle {
         position: component::Position { x: 4.0, y: ((crate::HEIGHT/crate::SCALE) - 12) as f32 },
         colour: component::Colour { r: utils::COLOUR_UI[0], g: utils::COLOUR_UI[1], b: utils::COLOUR_UI[2], a: utils::COLOUR_UI[3] },
         symbol: component::Symbol { shape: utils::SYMBOL_RESOURCE.into() },
@@ -35,6 +49,15 @@ pub fn generate_symbols(
         size: component::Size { width: (crate::WIDTH/crate::SCALE), height: crate::MENU_SIZE },
         ui: component::Ui
     });
+
+    for i in 0..utils::CRYSTAL_COUNT {
+        commands.spawn(bundle::SymbolBundle {
+            position: component::Position { x: ((crate::WIDTH/crate::SCALE) - (12 + (8 * i))) as f32, y: ((crate::HEIGHT/crate::SCALE) - 12) as f32 },
+            colour: component::Colour { r: utils::COLOUR_UI[0], g: utils::COLOUR_UI[1], b: utils::COLOUR_UI[2], a: utils::COLOUR_UI[3] },
+            symbol: component::Symbol { shape: utils::SYMBOL_OUTER_CRYSTAL.into() },
+            ui: component::Ui
+        }).insert(component::Crystal{ id: i });
+    }
  }
 
 pub fn update_bars(
@@ -61,10 +84,10 @@ pub fn update_action(
             match action.action {
                 utils::Action::Bomb => symbol.shape = utils::SYMBOL_BOMB.into(),
                 utils::Action::Face => symbol.shape = utils::SYMBOL_FACE.into(),
-                utils::Action::Factory => symbol.shape = utils::SYMBOL_FACTORY.into(),
                 utils::Action::Bubble => symbol.shape = utils::SYMBOL_BUBBLE.into(),
                 utils::Action::House => symbol.shape = utils::SYMBOL_HOUSE.into(),
             }
         }
     }
 }
+

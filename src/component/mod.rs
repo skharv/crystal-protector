@@ -159,3 +159,9 @@ pub struct Bomb {
 pub struct Crystal {
     pub id: i32,
 }
+
+#[derive(Component)]
+pub struct Victory;
+
+#[derive(Component)]
+pub struct Defeat;

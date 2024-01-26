@@ -1,8 +1,12 @@
+use bevy::input::ButtonState;
+use bevy::input::keyboard::KeyboardInput;
+use bevy::input::mouse::MouseButtonInput;
 use bevy::prelude::*;
 
 use crate::bundle;
 use crate::component;
 use crate::utils;
+use crate::AppState;
 
 pub fn setup(
     mut commands: Commands
@@ -122,12 +126,12 @@ pub fn update_finder(
 
 pub fn depower_crystal(
     mut commands: Commands,
-    mut query: Query<(Entity, &component::Crystal, &mut component::Colour)>
+    mut query: Query<(Entity, &component::Crystal, &mut component::Colour), Without<component::Ui>>,
+    ui_query: Query<(Entity, &component::Crystal), With<component::Ui>>,
     ) {
     for index in 0..utils::CRYSTAL_COUNT {
         let mut counter = 0;
         for (_, crystal, _) in query.iter() {
-            println!("first {}", crystal.id);
             if crystal.id == index {
                 counter = counter + 1;
             }
@@ -135,7 +139,6 @@ pub fn depower_crystal(
         if counter < utils::CRYSTAL_SECTIONS {
             for (entity, crystal, mut colour) in query.iter_mut() {
                 if crystal.id == index {
-                    println!("second {}", crystal.id);
                     colour.r = utils::COLOUR_SHALLOW[0];
                     colour.g = utils::COLOUR_SHALLOW[1];
                     colour.b = utils::COLOUR_SHALLOW[2];
@@ -143,6 +146,55 @@ pub fn depower_crystal(
                     commands.entity(entity).remove::<component::Crystal>();
                 }
             }
+            for (ui_entity, ui_crystal) in ui_query.iter() {
+                if ui_crystal.id == index {
+                    commands.entity(ui_entity).despawn();
+                    return;
+                }
+            }
         }
+    }
+}
+
+pub fn lose_game(
+    ui_query: Query<(Entity, &component::Crystal), With<component::Ui>>,
+    mut app_state: ResMut<NextState<AppState>>
+    ) {
+    if ui_query.iter().count() == 0 {
+        app_state.set(AppState::Loss);
+    }
+}
+
+pub fn start_action(
+    mut keys: EventReader<KeyboardInput>,
+    mut button: EventReader<MouseButtonInput>,
+    mut app_state: ResMut<NextState<AppState>>
+    ) {
+    for ev in keys.read() {
+        match ev.state {
+            ButtonState::Pressed => {
+            }
+            ButtonState::Released => {
+                app_state.set(AppState::Game);
+            }
+        }
+    }
+    for ev in button.read() {
+        match ev.state {
+            ButtonState::Pressed => {
+            }
+            ButtonState::Released => {
+                app_state.set(AppState::Game);
+            }
+        }
+    }
+}
+
+pub fn win_game(
+    mut spread_query: Query<Entity, With<component::Spread>>,
+    mut app_state: ResMut<NextState<AppState>>
+    ) {
+    if spread_query.iter().count() == 0 {
+        app_state.set(AppState::Win);
     }
 }

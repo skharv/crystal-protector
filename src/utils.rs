@@ -16,11 +16,12 @@ pub const SYMBOL_RESOURCE: &str = "08181C3C3466663C";
 pub const SYMBOL_HOUSE: &str = "182442FF425A5A7E";
 pub const SYMBOL_BOMB: &str = "01091670F8F8F870";
 pub const SYMBOL_FACE: &str = "7E81A5A58199817E";
-pub const SYMBOL_FACTORY: &str = "020A2A2A7E7E7EFF";
 pub const SYMBOL_BUBBLE: &str = "3C4289858581423C";
 pub const SYMBOL_BASE_SHAPE: &str = "C3810000000081C3";
 pub const SYMBOL_OUTER_CRYSTAL: &str = "005A3C7E7E3C5A00";
 pub const SYMBOL_INNER_CRYSTAL: &str = "0000183C3C180000";
+pub const SYMBOL_SAD: &str = "00000066003C2400";
+pub const SYMBOL_HAPPY: &str = "0000242400243C00";
 
 pub const AUTOMATON_SEEK_RANGE: f32 = 20.0;
 pub const CRYSTAL_COUNT: i32 = 4;
@@ -31,7 +32,6 @@ pub enum Action {
     House = 100,
     Bomb = 75,
     Face = 80,
-    Factory = 150,
     Bubble = 50
 }
 

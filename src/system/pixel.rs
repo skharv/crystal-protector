@@ -17,7 +17,7 @@ pub fn draw(
     mut wrapper_query: Query<&mut PixelsWrapper>,
     floor_query: Query<(&component::Position, &component::Colour), With<component::Floor>>,
     query: Query<(&component::Position, &component::Colour), (Without<component::Ui>, Without<component::Circle>)>,
-    symbol_query: Query<(&component::Position, &component::Colour, &component::Symbol), With<component::Ui>>,
+    symbol_query: Query<(&component::Position, &component::Colour, &component::Symbol), (With<component::Ui>, Without<component::Victory>, Without<component::Defeat>)>,
     bar_query: Query<(&component::Position, &component::Colour, &component::Size, Option<&component::Bar>), With<component::Ui>>,
     circle_query: Query<(&component::Position, &component::Colour, &component::Circle, Option<&component::Bubble>)>,
     ) {
@@ -138,6 +138,54 @@ pub fn draw(
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+pub fn draw_victory(
+    mut wrapper_query: Query<&mut PixelsWrapper>,
+    symbol_query: Query<(&component::Position, &component::Colour, &component::Symbol), (With<component::Ui>, With<component::Victory>)>,
+    ) {
+    let Ok(mut wrapper) = wrapper_query.get_single_mut() else { return };
+    let frame = wrapper.pixels.frame_mut();
+    for (position, colour, symbol) in symbol_query.iter() {
+        let bool_list = utils::convert_string_to_symbol(&symbol.shape);
+        
+        for i in 0..bool_list.len() {
+            if bool_list[i] {
+            let index = (((position.y as i32 + (i / crate::SYMBOL_SIZE) as i32) * 4 * (crate::WIDTH/crate::SCALE)) + (position.x as i32 + (i % crate::SYMBOL_SIZE) as i32) * 4) as usize;
+
+            if index < frame.iter().count() {
+                frame[index] = colour.r;
+                frame[index+1] = colour.g;
+                frame[index+2] = colour.b;
+                frame[index+3] = colour.a;
+            }
+            }
+        }
+    }
+}
+
+pub fn draw_defeat(
+    mut wrapper_query: Query<&mut PixelsWrapper>,
+    symbol_query: Query<(&component::Position, &component::Colour, &component::Symbol), (With<component::Ui>, With<component::Defeat>)>,
+    ) {
+    let Ok(mut wrapper) = wrapper_query.get_single_mut() else { return };
+    let frame = wrapper.pixels.frame_mut();
+    for (position, colour, symbol) in symbol_query.iter() {
+        let bool_list = utils::convert_string_to_symbol(&symbol.shape);
+        
+        for i in 0..bool_list.len() {
+            if bool_list[i] {
+            let index = (((position.y as i32 + (i / crate::SYMBOL_SIZE) as i32) * 4 * (crate::WIDTH/crate::SCALE)) + (position.x as i32 + (i % crate::SYMBOL_SIZE) as i32) * 4) as usize;
+
+            if index < frame.iter().count() {
+                frame[index] = colour.r;
+                frame[index+1] = colour.g;
+                frame[index+2] = colour.b;
+                frame[index+3] = colour.a;
+            }
             }
         }
     }
