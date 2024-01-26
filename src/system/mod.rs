@@ -1,8 +1,9 @@
-use bevy::prelude::*;
 use bevy_pixels::prelude::*;
+use bevy::prelude::*;
 use crate::AppState;
 
 mod action;
+mod audio;
 mod base;
 mod beam;
 mod game;
@@ -28,6 +29,7 @@ impl Plugin for GamePlugin {
                          (spread::spawn, player::spawn).after(base::spawn)
                     )
             .add_systems(Update, game::start_action.run_if(in_state(AppState::Start)))
+            .add_systems(OnEnter(AppState::Game), audio::play_music)
             .add_systems(Update, (
                     spread::movement,
                     spread::spread,

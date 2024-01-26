@@ -191,10 +191,10 @@ pub fn start_action(
 }
 
 pub fn win_game(
-    mut spread_query: Query<Entity, With<component::Spread>>,
+    query: Query<Entity, With<component::Spread>>,
     mut app_state: ResMut<NextState<AppState>>
     ) {
-    if spread_query.iter().count() == 0 {
+    if query.iter().count() == 0 {
         app_state.set(AppState::Win);
     }
 }

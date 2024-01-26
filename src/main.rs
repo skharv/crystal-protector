@@ -1,4 +1,4 @@
-use bevy::{prelude::*, window::WindowResolution, diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin}, input::{keyboard::KeyboardInput, ButtonState}};
+use bevy::{prelude::*, window::WindowResolution, diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin}, audio::AddAudioSource};
 use bevy_pixels::{PixelsPlugin, PixelsOptions};
 
 mod bundle;
@@ -55,7 +55,8 @@ fn main() {
         })
     })
     .add_plugins(system::GamePlugin)
-        .add_state::<AppState>();
+        .add_state::<AppState>()
+        .init_asset::<AudioSource>();
 
     #[cfg(debug_assertions)]
     {
