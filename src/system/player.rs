@@ -54,13 +54,17 @@ pub fn update_velocity(
 }
 
 pub fn update_position(
-    mut query: Query<(&mut component::Position, &component::Velocity), With<component::Input>>,
+    mut query: Query<(Entity, &mut component::Position, &component::Velocity), With<component::Input>>,
     mut chunk_query: Query<(&mut component::EntityList, &component::Chunk)>, 
     land_query: Query<&component::Position, (With<component::Land>, Without<component::Input>, Without<component::Spread>, Without<component::Dying>)>,
     time: Res<Time>
     ) {
-    for (mut position, velocity) in query.iter_mut() {
+    for (entity, mut position, velocity) in query.iter_mut() {
         let mut new_position = Vec2::new(position.x + (velocity.x * time.delta_seconds()), position.y + (velocity.y * time.delta_seconds()));
+
+        if new_position.x.is_nan() || new_position.y.is_nan() {
+            continue;
+        }
 
         if new_position.x > (crate::WIDTH / crate::SCALE) as f32 {
             new_position.x = (crate::WIDTH / crate::SCALE)as f32 - 1.0;
@@ -93,6 +97,23 @@ pub fn update_position(
         }
 
         if update_position {
+            let old_chunk_x = position.x as i32 / crate::CHUNK_SIZE;
+            let old_chunk_y = position.y as i32 / crate::CHUNK_SIZE;
+            let new_chunk_x = new_position.x as i32 / crate::CHUNK_SIZE;
+            let new_chunk_y = new_position.y as i32 / crate::CHUNK_SIZE;
+
+            if old_chunk_x != new_chunk_x || old_chunk_y != new_chunk_y {
+                for (mut list, chunk) in chunk_query.iter_mut() {
+                    if chunk.x == old_chunk_x && chunk.y == old_chunk_y {
+                        if let Some(index) = list.entities.iter().position(|i| *i == entity) {
+                            list.entities.remove(index);
+                        }
+                    }
+                    if chunk.x == new_chunk_x && chunk.y == new_chunk_y {
+                        list.entities.push(entity);
+                    }
+                }
+            }
             position.x = new_position.x;
             position.y = new_position.y;
         }

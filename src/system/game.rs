@@ -131,6 +131,7 @@ pub fn depower_crystal(
     ui_query: Query<(Entity, &component::Crystal), (With<component::Ui>, Without<component::Dying>)>,
     asset_server: Res<AssetServer>
     ) {
+    println!("{}", query.iter().count());
     for index in 0..utils::CRYSTAL_COUNT {
         let mut counter = 0;
         for (_, crystal, _) in query.iter() {
@@ -246,4 +247,11 @@ pub fn despawn_dying(
     query.for_each(|e| {
         commands.entity(e).despawn();
     })
+}
+
+pub fn input_count(
+    query: Query<(&component::Input, &component::Position)>
+    ) {
+    let (_, pos) = query.single();
+    println!("{0}, {1}", pos.x, pos.y);
 }

@@ -111,7 +111,7 @@ pub fn movement(
                 for (mut list, chunk) in chunk_query.iter_mut() {
                     if chunk.x == old_chunk_x && chunk.y == old_chunk_y {
                         if let Some(index) = list.entities.iter().position(|i| *i == entity) {
-                            list.entities.swap_remove(index);
+                            list.entities.remove(index);
                         }
                     }
                     if chunk.x == new_chunk_x && chunk.y == new_chunk_y {

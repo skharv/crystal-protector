@@ -7,9 +7,9 @@ use crate::component;
 use crate::utils;
 
 pub fn bubble (
-    mut bubble_query: Query<(&component::Position, &component::Circle), With<component::Bubble>>,
+    mut bubble_query: Query<(&component::Position, &component::Circle), (With<component::Bubble>, Without<component::Dying>)>,
     chunk_query: Query<(&component::EntityList, &component::Chunk)>, 
-    mut spread_query: Query<(&component::Position, &mut component::Velocity), With<component::Spread>>,
+    mut spread_query: Query<(&component::Position, &mut component::Velocity), (With<component::Spread>, Without<component::Dying>)>,
     ) {
     for (bubble_position, bubble_circle) in bubble_query.iter_mut() {
         let chunk_radius = ((bubble_circle.radius / crate::CHUNK_SIZE as f32).ceil() * 2.0) as i32;
@@ -36,10 +36,10 @@ pub fn bubble (
 
 pub fn automaton (
     mut commands: Commands,
-    mut automaton_query: Query<(Entity, &mut component::Position, &mut component::Velocity, &component::Speed, &component::DeathTimer, Option<&mut component::Seek>), (With<component::Automaton>, Without<component::Land>, Without<component::Spread>)>,
+    mut automaton_query: Query<(Entity, &mut component::Position, &mut component::Velocity, &component::Speed, &component::DeathTimer, Option<&mut component::Seek>), (With<component::Automaton>, Without<component::Land>, Without<component::Spread>, Without<component::Dying>)>,
     mut chunk_query: Query<(&mut component::EntityList, &component::Chunk)>, 
-    spread_query: Query<&component::Position, (With<component::Spread>, Without<component::Automaton>, Without<component::Input>)>,
-    land_query: Query<&component::Position, (With<component::Land>, Without<component::Spread>, Without<component::Automaton>)>,
+    spread_query: Query<&component::Position, (With<component::Spread>, Without<component::Automaton>, Without<component::Input>, Without<component::Dying>)>,
+    land_query: Query<&component::Position, (With<component::Land>, Without<component::Spread>, Without<component::Automaton>, Without<component::Dying>)>,
     time: Res<Time>,
     asset_server: Res<AssetServer>
     ) {
@@ -145,7 +145,7 @@ pub fn automaton (
                 for (mut list, chunk) in chunk_query.iter_mut() {
                     if chunk.x == old_chunk_x && chunk.y == old_chunk_y {
                         if let Some(index) = list.entities.iter().position(|i| *i == automaton) {
-                            list.entities.swap_remove(index);
+                            list.entities.remove(index);
                         }
                     }
                     if chunk.x == new_chunk_x && chunk.y == new_chunk_y {
@@ -162,9 +162,9 @@ pub fn automaton (
 pub fn bomb(
     mut commands: Commands,
     mut chunk_query: Query<(&mut component::EntityList, &component::Chunk)>, 
-    mut bomb_query: Query<(Entity, &mut component::Position, &mut component::Speed, &mut component::Velocity, &mut component::DeathTimer, &mut component::Bomb)>,
-    spread_query: Query<&component::Position, (With<component::Spread>, Without<component::Bomb>, Without<component::Input>)>,
-    land_query: Query<&component::Position, (With<component::Land>, Without<component::Spread>, Without<component::Bomb>, Without<component::Indestructable>, Without<component::Floor>)>,
+    mut bomb_query: Query<(Entity, &mut component::Position, &mut component::Speed, &mut component::Velocity, &mut component::DeathTimer, &mut component::Bomb), Without<component::Dying>>,
+    spread_query: Query<&component::Position, (With<component::Spread>, Without<component::Bomb>, Without<component::Input>, Without<component::Dying>)>,
+    land_query: Query<&component::Position, (With<component::Land>, Without<component::Spread>, Without<component::Bomb>, Without<component::Indestructable>, Without<component::Floor>, Without<component::Dying>)>,
     time: Res<Time>,
     asset_server: Res<AssetServer>
     ) {

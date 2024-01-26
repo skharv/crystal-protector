@@ -1,4 +1,4 @@
-use bevy::{prelude::*, window::WindowResolution, diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin}, asset::AssetMetaCheck};
+use bevy::{prelude::*, window::WindowResolution, asset::AssetMetaCheck};
 use bevy_pixels::{PixelsPlugin, PixelsOptions};
 
 mod bundle;
@@ -62,11 +62,6 @@ fn main() {
         .add_state::<AppState>()
         .init_asset::<AudioSource>();
 
-    #[cfg(debug_assertions)]
-    {
-        app.add_plugins(FrameTimeDiagnosticsPlugin::default())
-            .add_plugins(LogDiagnosticsPlugin::default());
-    }
     app.run();
 }
 
