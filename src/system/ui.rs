@@ -4,6 +4,139 @@ use crate::bundle;
 use crate::component;
 use crate::utils;
 
+pub fn generate_start_symbols(
+    mut commands: Commands
+    ) {
+    let you_position = Vec2::new(((crate::WIDTH/crate::SCALE) - crate::SYMBOL_SIZE as i32) as f32 / 2.0, (((crate::HEIGHT/crate::SCALE) - crate::MENU_SIZE) - crate::SYMBOL_SIZE as i32) as f32 / 2.0);
+    let wasd_position = Vec2::new((((crate::WIDTH/crate::SCALE) / 2) - crate::SYMBOL_SIZE as i32) as f32 / 2.0, (((crate::HEIGHT/crate::SCALE) / 2) - crate::SYMBOL_SIZE as i32) as f32);
+    let click_position = Vec2::new((((crate::WIDTH/crate::SCALE) / 2) - crate::SYMBOL_SIZE as i32) as f32 / 2.0 + (((crate::WIDTH/crate::SCALE) / 2) - crate::SYMBOL_SIZE as i32) as f32, (((crate::HEIGHT/crate::SCALE) / 2) - crate::SYMBOL_SIZE as i32) as f32);
+    let offset = (crate::SYMBOL_SIZE + 2) as f32;
+
+    commands.spawn(bundle::SymbolBundle {
+        position: component::Position { x: wasd_position.x, y: wasd_position.y - offset },
+        colour: component::Colour { r: utils::COLOUR_UI[0], g: utils::COLOUR_UI[1], b: utils::COLOUR_UI[2], a: utils::COLOUR_UI[3] },
+        symbol: component::Symbol { shape: utils::SYMBOL_W.into() },
+        ui: component::Ui
+    }).insert(component::Start);
+    commands.spawn(bundle::SymbolBundle {
+        position: component::Position { x: wasd_position.x - offset, y: wasd_position.y },
+        colour: component::Colour { r: utils::COLOUR_UI[0], g: utils::COLOUR_UI[1], b: utils::COLOUR_UI[2], a: utils::COLOUR_UI[3] },
+        symbol: component::Symbol { shape: utils::SYMBOL_A.into() },
+        ui: component::Ui
+    }).insert(component::Start);
+    commands.spawn(bundle::SymbolBundle {
+        position: component::Position { x: wasd_position.x, y: wasd_position.y },
+        colour: component::Colour { r: utils::COLOUR_UI[0], g: utils::COLOUR_UI[1], b: utils::COLOUR_UI[2], a: utils::COLOUR_UI[3] },
+        symbol: component::Symbol { shape: utils::SYMBOL_S.into() },
+        ui: component::Ui
+    }).insert(component::Start);
+    commands.spawn(bundle::SymbolBundle {
+        position: component::Position { x: wasd_position.x + offset, y: wasd_position.y },
+        colour: component::Colour { r: utils::COLOUR_UI[0], g: utils::COLOUR_UI[1], b: utils::COLOUR_UI[2], a: utils::COLOUR_UI[3] },
+        symbol: component::Symbol { shape: utils::SYMBOL_D.into() },
+        ui: component::Ui
+    }).insert(component::Start);
+    commands.spawn(bundle::SymbolBundle {
+        position: component::Position { x: click_position.x, y: click_position.y },
+        colour: component::Colour { r: utils::COLOUR_UI[0], g: utils::COLOUR_UI[1], b: utils::COLOUR_UI[2], a: utils::COLOUR_UI[3] },
+        symbol: component::Symbol { shape: utils::SYMBOL_L_BUTTON.into() },
+        ui: component::Ui
+    }).insert(component::Start);
+    commands.spawn(bundle::SymbolBundle {
+        position: component::Position { x: click_position.x + offset, y: click_position.y },
+        colour: component::Colour { r: utils::COLOUR_UI[0], g: utils::COLOUR_UI[1], b: utils::COLOUR_UI[2], a: utils::COLOUR_UI[3] },
+        symbol: component::Symbol { shape: utils::SYMBOL_R_BUTTON.into() },
+        ui: component::Ui
+    }).insert(component::Start);
+    commands.spawn(bundle::SymbolBundle {
+        position: component::Position { x: click_position.x - offset, y: click_position.y },
+        colour: component::Colour { r: utils::COLOUR_UI[0], g: utils::COLOUR_UI[1], b: utils::COLOUR_UI[2], a: utils::COLOUR_UI[3] },
+        symbol: component::Symbol { shape: utils::SYMBOL_LASER.into() },
+        ui: component::Ui
+    }).insert(component::Start);
+    commands.spawn(bundle::SymbolBundle {
+        position: component::Position { x: click_position.x + offset * 2.0, y: click_position.y }, 
+        colour: component::Colour { r: utils::COLOUR_UI[0], g: utils::COLOUR_UI[1], b: utils::COLOUR_UI[2], a: utils::COLOUR_UI[3] },
+        symbol: component::Symbol { shape: utils::SYMBOL_BOMB.into() },
+        ui: component::Ui
+    }).insert(component::Start);
+    commands.spawn(bundle::SymbolBundle {
+        position: component::Position { x: click_position.x + offset * 3.0, y: click_position.y}, 
+        colour: component::Colour { r: utils::COLOUR_UI[0], g: utils::COLOUR_UI[1], b: utils::COLOUR_UI[2], a: utils::COLOUR_UI[3] },
+        symbol: component::Symbol { shape: utils::SYMBOL_SQUIGGLE.into() },
+        ui: component::Ui
+    }).insert(component::Start);
+    commands.spawn(bundle::SymbolBundle {
+        position: component::Position { x: click_position.x + offset * 3.0, y: click_position.y - offset}, 
+        colour: component::Colour { r: utils::COLOUR_UI[0], g: utils::COLOUR_UI[1], b: utils::COLOUR_UI[2], a: utils::COLOUR_UI[3] },
+        symbol: component::Symbol { shape: utils::SYMBOL_1.into() },
+        ui: component::Ui
+    }).insert(component::Start);
+    commands.spawn(bundle::SymbolBundle {
+        position: component::Position { x: click_position.x + offset * 2.0, y: click_position.y - offset }, 
+        colour: component::Colour { r: utils::COLOUR_UI[0], g: utils::COLOUR_UI[1], b: utils::COLOUR_UI[2], a: utils::COLOUR_UI[3] },
+        symbol: component::Symbol { shape: utils::SYMBOL_HOUSE.into() },
+        ui: component::Ui
+    }).insert(component::Start);
+    commands.spawn(bundle::SymbolBundle {
+        position: component::Position { x: click_position.x + offset * 2.0, y: click_position.y + offset }, 
+        colour: component::Colour { r: utils::COLOUR_UI[0], g: utils::COLOUR_UI[1], b: utils::COLOUR_UI[2], a: utils::COLOUR_UI[3] },
+        symbol: component::Symbol { shape: utils::SYMBOL_FACE.into() },
+        ui: component::Ui
+    }).insert(component::Start);
+    commands.spawn(bundle::SymbolBundle {
+        position: component::Position { x: click_position.x + offset * 3.0, y: click_position.y + offset }, 
+        colour: component::Colour { r: utils::COLOUR_UI[0], g: utils::COLOUR_UI[1], b: utils::COLOUR_UI[2], a: utils::COLOUR_UI[3] },
+        symbol: component::Symbol { shape: utils::SYMBOL_SQUIGGLE.into() },
+        ui: component::Ui
+    }).insert(component::Start);
+    commands.spawn(bundle::SymbolBundle {
+        position: component::Position { x: click_position.x + offset * 2.0, y: click_position.y + offset * 2.0}, 
+        colour: component::Colour { r: utils::COLOUR_UI[0], g: utils::COLOUR_UI[1], b: utils::COLOUR_UI[2], a: utils::COLOUR_UI[3] },
+        symbol: component::Symbol { shape: utils::SYMBOL_BUBBLE.into() },
+        ui: component::Ui
+    }).insert(component::Start);
+    commands.spawn(bundle::SymbolBundle {
+        position: component::Position { x: click_position.x + offset * 3.0, y: click_position.y + offset * 2.0}, 
+        colour: component::Colour { r: utils::COLOUR_UI[0], g: utils::COLOUR_UI[1], b: utils::COLOUR_UI[2], a: utils::COLOUR_UI[3] },
+        symbol: component::Symbol { shape: utils::SYMBOL_4.into() },
+        ui: component::Ui
+    }).insert(component::Start);
+
+    for i in 0..utils::CRYSTAL_COUNT {
+        commands.spawn(bundle::SymbolBundle {
+            position: component::Position { x: ((crate::WIDTH/crate::SCALE) - (12 + (8 * i))) as f32, y: ((crate::HEIGHT/crate::SCALE) - 12) as f32 },
+            colour: component::Colour { r: utils::COLOUR_UI[0], g: utils::COLOUR_UI[1], b: utils::COLOUR_UI[2], a: utils::COLOUR_UI[3] },
+            symbol: component::Symbol { shape: utils::SYMBOL_OUTER_CRYSTAL.into() },
+            ui: component::Ui
+        }).insert(component::Start);
+    }
+    commands.spawn(bundle::SymbolBundle {
+            position: component::Position { x: ((crate::WIDTH/crate::SCALE) - 36) as f32, y: ((crate::HEIGHT/crate::SCALE) - 12) as f32 - offset },
+        colour: component::Colour { r: utils::COLOUR_UI[0], g: utils::COLOUR_UI[1], b: utils::COLOUR_UI[2], a: utils::COLOUR_UI[3] },
+        symbol: component::Symbol { shape: utils::SYMBOL_ARROW.into() },
+        ui: component::Ui
+    }).insert(component::Start);
+    commands.spawn(bundle::SymbolBundle {
+        position: component::Position { x: ((crate::WIDTH/crate::SCALE) - 36) as f32, y: ((crate::HEIGHT/crate::SCALE) - 12) as f32 - (offset * 2.0) },
+        colour: component::Colour { r: utils::COLOUR_UI[0], g: utils::COLOUR_UI[1], b: utils::COLOUR_UI[2], a: utils::COLOUR_UI[3] },
+        symbol: component::Symbol { shape: utils::SYMBOL_HEART.into() },
+        ui: component::Ui
+    }).insert(component::Start);
+    commands.spawn(bundle::SymbolBundle {
+        position: component::Position { x: you_position.x, y: you_position.y - offset}, 
+        colour: component::Colour { r: utils::COLOUR_UI[0], g: utils::COLOUR_UI[1], b: utils::COLOUR_UI[2], a: utils::COLOUR_UI[3] },
+        symbol: component::Symbol { shape: utils::SYMBOL_ARROW.into() },
+        ui: component::Ui
+    }).insert(component::Start);
+    commands.spawn(bundle::SymbolBundle {
+        position: component::Position { x: you_position.x, y: you_position.y}, 
+        colour: component::Colour { r: utils::COLOUR_UI[0], g: utils::COLOUR_UI[1], b: utils::COLOUR_UI[2], a: utils::COLOUR_UI[3] },
+        symbol: component::Symbol { shape: utils::SYMBOL_YOU.into() },
+        ui: component::Ui
+    }).insert(component::Start);
+}
+
 pub fn generate_symbols(
     mut commands: Commands
     ) {

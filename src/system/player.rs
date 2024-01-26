@@ -1,3 +1,4 @@
+use bevy::audio::{PlaybackMode, Volume};
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 use rand::Rng;
@@ -137,11 +138,21 @@ pub fn absorb(
     window: Query<&Window, With<PrimaryWindow>>,
     mut absorb_query: Query<(&component::Position, &mut component::Resources, &component::Absorb), With<component::Input>>,
     mut chunk_query: Query<(&mut component::EntityList, &component::Chunk)>, 
-    mut land_query: Query<(&component::Position, &mut component::Colour, Option<&component::Resource>, Option<&component::Indestructable>), (With<component::Land>, Without<component::Input>, Without<component::Spread>, Without<component::DeathTimer>)>
+    mut land_query: Query<(&component::Position, &mut component::Colour, Option<&component::Resource>, Option<&component::Indestructable>), (With<component::Land>, Without<component::Input>, Without<component::Spread>, Without<component::DeathTimer>)>,
+    asset_server: Res<AssetServer>
     ) {
     let mut rng = rand::thread_rng();
     if buttons.just_pressed(MouseButton::Left) {
         if let Some(cursor_position) = window.single().cursor_position() {
+            commands.spawn(AudioBundle {
+                        source: asset_server.load("laser.ogg"),
+                        settings: PlaybackSettings{
+                            mode: PlaybackMode::Despawn,
+                            volume: Volume::new_relative(0.25),
+                            ..default()
+                        },
+                        ..default()
+                    });
             for (position, mut resources, absorb) in absorb_query.iter_mut() { 
                 let distance = ((cursor_position.x/2.0 - position.x).powi(2) + (cursor_position.y/2.0 - position.y).powi(2)).sqrt();
                 for step in 1..absorb.range as i32 {
@@ -153,7 +164,6 @@ pub fn absorb(
                         timer: component::Timer{ remaining: rng.gen_range(0.05..0.25) },
                         beam: component::Beam
                     });
-
                     let mut target_position = Vec2::new(0.0, 0.0);
                     let mut target_chunk = IVec2::new(0, 0);
                     let mut target_hit = false;
@@ -250,6 +260,7 @@ pub fn action(
     buttons: Res<Input<MouseButton>>,
     window: Query<&Window, With<PrimaryWindow>>,
     mut action_query: Query<(&mut component::Position, &mut component::Resources, &component::Speed, &component::Action), With<component::Input>>,
+    asset_server: Res<AssetServer>
     ) {
     let mut rng = rand::thread_rng();
 
@@ -277,26 +288,42 @@ pub fn action(
                         if resources.amount >= utils::Action::Face as i32 {
                             let angle = rng.gen_range(0.0..360.0);
                             let vel = Vec2::new(f32::sin(angle), f32::cos(angle));
-                            commands.spawn(bundle::AutomatonBundle {
+                            commands.spawn((bundle::AutomatonBundle {
                                 position: component::Position{ x: position.x, y: position.y },
                                 velocity: component::Velocity { x: vel.x, y: vel.y },
                                 speed: component::Speed { value: 20.0 },
                                 colour: component::Colour { r: utils::COLOUR_BEAM[0], g: utils::COLOUR_BEAM[1], b: utils::COLOUR_BEAM[2], a: utils::COLOUR_BEAM[3] },
                                 timer: component::DeathTimer { remaining: 30.0 },
                                 automaton: component::Automaton
-                            });
+                            },
+                            AudioBundle{
+                                source: asset_server.load("robot.ogg"),
+                                settings: PlaybackSettings{
+                                    mode: PlaybackMode::Remove,
+                                    ..default()
+                                },
+                                ..default()
+                            }));
                             resources.amount -= utils::Action::Face as i32;
                         }
                     },
                     utils::Action::Bubble => {
                         if resources.amount >= utils::Action::Bubble as i32 {
-                            commands.spawn(bundle::BubbleBundle {
+                            commands.spawn((bundle::BubbleBundle {
                                 position: component::Position{ x: position.x, y: position.y },
                                 circle: component::Circle { radius: 10.0 },
                                 timer: component::DeathTimer { remaining: 60.0 },
                                 colour: component::Colour { r: utils::COLOUR_SPREAD[0], g: utils::COLOUR_SPREAD[1], b: utils::COLOUR_SPREAD[2], a: utils::COLOUR_SPREAD[3] },
                                 bubble: component::Bubble
-                            });
+                            },
+                            AudioBundle{
+                                source: asset_server.load("bubble.ogg"),
+                                settings: PlaybackSettings{
+                                    mode: PlaybackMode::Remove,
+                                    ..default()
+                                },
+                                ..default()
+                            }));
                             resources.amount -= utils::Action::Bubble as i32;
                         }
                     },
@@ -315,6 +342,14 @@ pub fn action(
                                 colour: component::Colour { r: utils::COLOUR_BEAM[0], g: utils::COLOUR_BEAM[1], b: utils::COLOUR_BEAM[2], a: utils::COLOUR_BEAM[3] },
                                 circle: component::Circle { radius: 0.0 },
                                 finder: component::Finder { minimum_radius: 0, maximum_radius: 15, timer_target: 0.25 , timer_counter: 0.0 }
+                            });
+                            commands.spawn(AudioBundle{
+                                source: asset_server.load("teleport.ogg"),
+                                settings: PlaybackSettings {
+                                    mode: PlaybackMode::Despawn,
+                                    ..default()
+                                },
+                                ..default()
                             });
                             resources.amount -= utils::Action::House as i32;
                         }

@@ -1,3 +1,4 @@
+use bevy::audio::PlaybackMode;
 use bevy::input::ButtonState;
 use bevy::input::keyboard::KeyboardInput;
 use bevy::input::mouse::MouseButtonInput;
@@ -128,6 +129,7 @@ pub fn depower_crystal(
     mut commands: Commands,
     mut query: Query<(Entity, &component::Crystal, &mut component::Colour), Without<component::Ui>>,
     ui_query: Query<(Entity, &component::Crystal), With<component::Ui>>,
+    asset_server: Res<AssetServer>
     ) {
     for index in 0..utils::CRYSTAL_COUNT {
         let mut counter = 0;
@@ -148,6 +150,14 @@ pub fn depower_crystal(
             }
             for (ui_entity, ui_crystal) in ui_query.iter() {
                 if ui_crystal.id == index {
+                    commands.spawn(AudioBundle{
+                        source: asset_server.load("shatter.ogg"),
+                        settings: PlaybackSettings{
+                            mode: PlaybackMode::Despawn,
+                            ..default()
+                        },
+                        ..default()
+                    });
                     commands.entity(ui_entity).despawn();
                     return;
                 }
@@ -157,10 +167,25 @@ pub fn depower_crystal(
 }
 
 pub fn lose_game(
+    mut commands: Commands,
     ui_query: Query<(Entity, &component::Crystal), With<component::Ui>>,
+    bgm_query: Query<(Entity, &AudioSink), With<component::Music>>,
+    asset_server: Res<AssetServer>,
     mut app_state: ResMut<NextState<AppState>>
     ) {
     if ui_query.iter().count() == 0 {
+        if let Ok((entity, sink)) = bgm_query.get_single(){
+            sink.stop();
+            commands.entity(entity).despawn();
+            commands.spawn(AudioBundle{
+                source: asset_server.load("lose.ogg"),
+                settings: PlaybackSettings{
+                    mode: PlaybackMode::Despawn,
+                    ..default()
+                },
+                ..default()
+            });
+        }
         app_state.set(AppState::Loss);
     }
 }
@@ -191,10 +216,25 @@ pub fn start_action(
 }
 
 pub fn win_game(
+    mut commands: Commands,
     query: Query<Entity, With<component::Spread>>,
-    mut app_state: ResMut<NextState<AppState>>
+    bgm_query: Query<(Entity, &AudioSink), With<component::Music>>,
+    mut app_state: ResMut<NextState<AppState>>,
+    asset_server: Res<AssetServer>
     ) {
     if query.iter().count() == 0 {
+        if let Ok((entity, sink)) = bgm_query.get_single(){
+            sink.stop();
+            commands.entity(entity).despawn();
+            commands.spawn(AudioBundle{
+                source: asset_server.load("win.ogg"),
+                settings: PlaybackSettings{
+                    mode: PlaybackMode::Despawn,
+                    ..default()
+                },
+                ..default()
+            });
+        }
         app_state.set(AppState::Win);
     }
 }

@@ -1,3 +1,4 @@
+use bevy::audio::PlaybackMode;
 use bevy::prelude::*;
 use rand::Rng;
 
@@ -39,7 +40,8 @@ pub fn automaton (
     mut chunk_query: Query<(&mut component::EntityList, &component::Chunk)>, 
     spread_query: Query<&component::Position, (With<component::Spread>, Without<component::Automaton>, Without<component::Input>)>,
     land_query: Query<&component::Position, (With<component::Land>, Without<component::Spread>, Without<component::Automaton>)>,
-    time: Res<Time>
+    time: Res<Time>,
+    asset_server: Res<AssetServer>
     ) {
     let mut rng = rand::thread_rng();
     for (automaton, mut auto_position, mut auto_velocity, auto_speed, auto_death_timer, auto_seek) in automaton_query.iter_mut() {
@@ -51,6 +53,14 @@ pub fn automaton (
                 if x.abs() < 1.0 && y.abs() < 1.0 {
                     commands.entity(seek.entity).despawn();
                     commands.entity(automaton).remove::<component::Seek>();
+                    commands.spawn(AudioBundle{
+                        source: asset_server.load("robot_attack.ogg"),
+                        settings: PlaybackSettings{
+                            mode: PlaybackMode::Despawn,
+                            ..default()
+                        },
+                        ..default()
+                    });
                 }
                 auto_velocity.x = angle.cos();
                 auto_velocity.y = angle.sin();
@@ -155,7 +165,8 @@ pub fn bomb(
     mut bomb_query: Query<(Entity, &mut component::Position, &mut component::Speed, &mut component::Velocity, &mut component::DeathTimer, &mut component::Bomb)>,
     spread_query: Query<&component::Position, (With<component::Spread>, Without<component::Bomb>, Without<component::Input>)>,
     land_query: Query<&component::Position, (With<component::Land>, Without<component::Spread>, Without<component::Bomb>, Without<component::Indestructable>, Without<component::Floor>)>,
-    time: Res<Time>
+    time: Res<Time>,
+    asset_server: Res<AssetServer>
     ) {
     for (entity, mut bomb_position, mut bomb_speed, mut bomb_velocity, mut bomb_timer, bomb_radius) in bomb_query.iter_mut() {
         let chunk_radius = ((bomb_radius.radius/crate::CHUNK_SIZE as f32).ceil() * 2.0) as i32;
@@ -216,6 +227,15 @@ pub fn bomb(
         bomb_timer.remaining -= time.delta_seconds();
         if bomb_timer.remaining <= 0.0 {
             commands.entity(entity).despawn();
+            commands.spawn(
+                AudioBundle{
+                    source: asset_server.load("bomb.ogg"),
+                    settings: PlaybackSettings{
+                        mode: PlaybackMode::Despawn,
+                        ..default()
+                    },
+                    ..default()
+                });
             commands.spawn(bundle::FinderBundle {
                 position: component::Position{ x: bomb_position.x, y: bomb_position.y },
                 colour: component::Colour { r: utils::COLOUR_BEAM[0], g: utils::COLOUR_BEAM[1], b: utils::COLOUR_BEAM[2], a: utils::COLOUR_BEAM[3] },
@@ -244,8 +264,4 @@ pub fn bomb(
             }
         }
     }
-}
-
-pub fn factory (
-    ) {
 }

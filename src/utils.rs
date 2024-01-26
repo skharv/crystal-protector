@@ -22,6 +22,19 @@ pub const SYMBOL_OUTER_CRYSTAL: &str = "005A3C7E7E3C5A00";
 pub const SYMBOL_INNER_CRYSTAL: &str = "0000183C3C180000";
 pub const SYMBOL_SAD: &str = "00000066003C2400";
 pub const SYMBOL_HAPPY: &str = "0000242400243C00";
+pub const SYMBOL_W: &str = "7E81A5A5B5BD817E";
+pub const SYMBOL_A: &str = "7E8199A5BDA5817E";
+pub const SYMBOL_S: &str = "7E81BDB18DBD817E";
+pub const SYMBOL_D: &str = "7E81B9A5A5B9817E";
+pub const SYMBOL_1: &str = "7E818999899D817E";
+pub const SYMBOL_4: &str = "7E81A9A9BD89817E";
+pub const SYMBOL_SQUIGGLE: &str = "0008100810081000";
+pub const SYMBOL_L_BUTTON: &str = "3C72727E4242423C";
+pub const SYMBOL_R_BUTTON: &str = "3C4E4E7E4242423C";
+pub const SYMBOL_LASER: &str = "5088209048040201";
+pub const SYMBOL_HEART: &str = "0066F9FDFF7E3C18";
+pub const SYMBOL_ARROW: &str = "001818187E3C1800";
+pub const SYMBOL_YOU: &str = "0000000008000000";
 
 pub const AUTOMATON_SEEK_RANGE: f32 = 20.0;
 pub const CRYSTAL_COUNT: i32 = 4;
@@ -30,7 +43,7 @@ pub const CRYSTAL_SECTIONS: i32 = 28;
 #[derive(Clone, Copy)]
 pub enum Action {
     House = 100,
-    Bomb = 75,
+    Bomb = 110,
     Face = 80,
     Bubble = 50
 }

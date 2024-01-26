@@ -19,7 +19,8 @@ impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(PreStartup, game::setup)
             .add_systems(Startup, (
-                    noise::generate, ui::generate_symbols
+                    noise::generate, ui::generate_symbols,
+                    noise::generate, ui::generate_start_symbols
                         ))
             .add_systems(PostStartup, (
                     base::spawn,
@@ -57,7 +58,8 @@ impl Plugin for GamePlugin {
                     pixel::clear, 
                     pixel::draw.after(pixel::clear).run_if(in_state(AppState::Game)),
                     pixel::draw_victory.after(pixel::clear).run_if(in_state(AppState::Win)),
-                    pixel::draw_defeat.after(pixel::clear).run_if(in_state(AppState::Loss))
+                    pixel::draw_defeat.after(pixel::clear).run_if(in_state(AppState::Loss)),
+                    pixel::draw_start.after(pixel::clear).run_if(in_state(AppState::Start))
                     ));
 
     }

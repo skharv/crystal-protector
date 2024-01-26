@@ -165,3 +165,9 @@ pub struct Victory;
 
 #[derive(Component)]
 pub struct Defeat;
+
+#[derive(Component)]
+pub struct Music;
+
+#[derive(Component)]
+pub struct Start;

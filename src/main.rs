@@ -1,4 +1,4 @@
-use bevy::{prelude::*, window::WindowResolution, diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin}, audio::AddAudioSource};
+use bevy::{prelude::*, window::WindowResolution, diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin}};
 use bevy_pixels::{PixelsPlugin, PixelsOptions};
 
 mod bundle;

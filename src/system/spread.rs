@@ -1,3 +1,4 @@
+use bevy::audio::PlaybackMode;
 use bevy::prelude::*;
 use rand::Rng;
 
@@ -126,7 +127,8 @@ pub fn spread(
     mut commands: Commands,
     mut spread_query: Query<(Entity, &component::Position, &component::Colour, &component::Hunger, &mut component::Spread)>,
     mut chunk_query: Query<(&mut component::EntityList, &component::Chunk)>, 
-    time: Res<Time>
+    time: Res<Time>,
+    asset_server: Res<AssetServer>
     ) {
     let mut rng = rand::thread_rng();
     let cap_met = spread_query.iter().count() > CAP;
@@ -142,14 +144,23 @@ pub fn spread(
 
                 let new_hunger = rng.gen_range(15.0..20.0);
 
-                let entity = commands.spawn(bundle::SpreadBundle {
+                let entity = commands.spawn((bundle::SpreadBundle {
                     position: component::Position { x: new_position.x as f32, y: new_position.y as f32 },
                     velocity: component::Velocity { x: f32::cos(new_angle), y:f32::sin(new_angle) },
                     speed: component::Speed { value: rng.gen_range(5.0..15.0) },
                     colour: component::Colour { r: spread_colour.r, g: spread_colour.g, b: spread_colour.b, a: spread_colour.a },
                     spread: component::Spread { duration: rng.gen_range(10.0..15.0), counter: 0.0 },
                     hunger: component::Hunger { duration: new_hunger, counter: new_hunger * 0.5 }
-                }).id();
+                },
+                AudioBundle{
+                    source: asset_server.load("birth.ogg"),
+                    settings: PlaybackSettings{
+                        mode: PlaybackMode::Remove,
+                        ..default()
+                    },
+                    ..default()
+                }
+                )).id();
 
                 for (mut list, chunk) in chunk_query.iter_mut() {
                     if chunk.x == (new_position.x as i32 / crate::CHUNK_SIZE) && chunk.y == (new_position.y as i32 / crate::CHUNK_SIZE) {
@@ -160,7 +171,7 @@ pub fn spread(
                 if cap_met {
                     commands.entity(parent).despawn();
                 } else {
-                    spread.duration *= 2.0;
+                    spread.duration *= 1.8;
                 }
             }
         }
