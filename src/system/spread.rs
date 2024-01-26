@@ -153,7 +153,7 @@ pub fn spread(
                     hunger: component::Hunger { duration: new_hunger, counter: new_hunger * 0.5 }
                 },
                 AudioBundle{
-                    source: asset_server.load("birth.ogg"),
+                    source: asset_server.load("./birth.ogg"),
                     settings: PlaybackSettings{
                         mode: PlaybackMode::Remove,
                         ..default()

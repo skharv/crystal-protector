@@ -145,7 +145,7 @@ pub fn absorb(
     if buttons.just_pressed(MouseButton::Left) {
         if let Some(cursor_position) = window.single().cursor_position() {
             commands.spawn(AudioBundle {
-                        source: asset_server.load("laser.ogg"),
+                        source: asset_server.load("./laser.ogg"),
                         settings: PlaybackSettings{
                             mode: PlaybackMode::Despawn,
                             volume: Volume::new_relative(0.25),
@@ -297,7 +297,7 @@ pub fn action(
                                 automaton: component::Automaton
                             },
                             AudioBundle{
-                                source: asset_server.load("robot.ogg"),
+                                source: asset_server.load("./robot.ogg"),
                                 settings: PlaybackSettings{
                                     mode: PlaybackMode::Remove,
                                     ..default()
@@ -317,7 +317,7 @@ pub fn action(
                                 bubble: component::Bubble
                             },
                             AudioBundle{
-                                source: asset_server.load("bubble.ogg"),
+                                source: asset_server.load("./bubble.ogg"),
                                 settings: PlaybackSettings{
                                     mode: PlaybackMode::Remove,
                                     ..default()
@@ -344,7 +344,7 @@ pub fn action(
                                 finder: component::Finder { minimum_radius: 0, maximum_radius: 15, timer_target: 0.25 , timer_counter: 0.0 }
                             });
                             commands.spawn(AudioBundle{
-                                source: asset_server.load("teleport.ogg"),
+                                source: asset_server.load("./teleport.ogg"),
                                 settings: PlaybackSettings {
                                     mode: PlaybackMode::Despawn,
                                     ..default()

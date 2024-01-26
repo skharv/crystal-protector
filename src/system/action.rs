@@ -54,7 +54,7 @@ pub fn automaton (
                     commands.entity(seek.entity).despawn();
                     commands.entity(automaton).remove::<component::Seek>();
                     commands.spawn(AudioBundle{
-                        source: asset_server.load("robot_attack.ogg"),
+                        source: asset_server.load("./robot_attack.ogg"),
                         settings: PlaybackSettings{
                             mode: PlaybackMode::Despawn,
                             ..default()
@@ -229,7 +229,7 @@ pub fn bomb(
             commands.entity(entity).despawn();
             commands.spawn(
                 AudioBundle{
-                    source: asset_server.load("bomb.ogg"),
+                    source: asset_server.load("./bomb.ogg"),
                     settings: PlaybackSettings{
                         mode: PlaybackMode::Despawn,
                         ..default()

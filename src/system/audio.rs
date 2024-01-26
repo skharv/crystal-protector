@@ -7,7 +7,7 @@ pub fn play_music(
     asset_server: Res<AssetServer>
     ) {
     commands.spawn((AudioBundle{
-        source: asset_server.load("bgm.ogg"),
+        source: asset_server.load("./bgm.ogg"),
         settings: PlaybackSettings{
             mode: PlaybackMode::Loop,
             volume: Volume::new_relative(0.5),

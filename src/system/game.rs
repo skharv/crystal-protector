@@ -151,7 +151,7 @@ pub fn depower_crystal(
             for (ui_entity, ui_crystal) in ui_query.iter() {
                 if ui_crystal.id == index {
                     commands.spawn(AudioBundle{
-                        source: asset_server.load("shatter.ogg"),
+                        source: asset_server.load("./shatter.ogg"),
                         settings: PlaybackSettings{
                             mode: PlaybackMode::Despawn,
                             ..default()
@@ -178,7 +178,7 @@ pub fn lose_game(
             sink.stop();
             commands.entity(entity).despawn();
             commands.spawn(AudioBundle{
-                source: asset_server.load("lose.ogg"),
+                source: asset_server.load("./lose.ogg"),
                 settings: PlaybackSettings{
                     mode: PlaybackMode::Despawn,
                     ..default()
@@ -227,7 +227,7 @@ pub fn win_game(
             sink.stop();
             commands.entity(entity).despawn();
             commands.spawn(AudioBundle{
-                source: asset_server.load("win.ogg"),
+                source: asset_server.load("./win.ogg"),
                 settings: PlaybackSettings{
                     mode: PlaybackMode::Despawn,
                     ..default()
