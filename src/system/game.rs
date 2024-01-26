@@ -127,7 +127,7 @@ pub fn update_finder(
 
 pub fn depower_crystal(
     mut commands: Commands,
-    mut query: Query<(Entity, &component::Crystal, &mut component::Colour), Without<component::Ui>>,
+    mut query: Query<(Entity, &component::Crystal, &mut component::Colour), (Without<component::Ui>, Without<component::Input>)>,
     ui_query: Query<(Entity, &component::Crystal), With<component::Ui>>,
     asset_server: Res<AssetServer>
     ) {

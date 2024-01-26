@@ -13,12 +13,12 @@ pub fn generate(
     let mut rng = rand::thread_rng();
     let seed = rng.gen_range(0..10000);
     let mut fbm = Fbm::<Perlin>::new(seed);
-    fbm.octaves = rng.gen_range(2..5);
-    fbm.frequency = rng.gen_range(0.02..0.04);
+    fbm.octaves = rng.gen_range(2..4);
+    fbm.frequency = rng.gen_range(0.02..0.05);
 
     let mut rm = RidgedMulti::<Perlin>::new(seed);
     rm.octaves = 5;
-    rm.frequency = rng.gen_range(0.02..0.04);
+    rm.frequency = rng.gen_range(0.01..0.03);
 
     for w in 0..(crate::WIDTH/crate::SCALE) {
         for h in 0..(crate::HEIGHT/crate::SCALE) - crate::MENU_SIZE {
@@ -27,7 +27,7 @@ pub fn generate(
             let mut colour;
             let floor_colour;
 
-            if noise > -0.3 {
+            if noise > -0.4 {
                 floor_colour = utils::COLOUR_DARK_FLOOR;
             } else {
                 floor_colour = utils::COLOUR_LIGHT_FLOOR;
@@ -47,11 +47,11 @@ pub fn generate(
                 floor: component::Floor
             });
 
-            if noise < 0.0 {
+            if noise < 0.3 {
                 continue;
-            } else if noise < 0.3 {
-                colour = utils::COLOUR_SHALLOW;
             } else if noise < 0.6 {
+                colour = utils::COLOUR_SHALLOW;
+            } else if noise < 0.85 {
                 colour = utils::COLOUR_MEDIUM;
             } else {
                 colour = utils::COLOUR_DEEP;

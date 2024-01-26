@@ -15,27 +15,29 @@ pub fn spawn(
     ) {
     let mut rng = rand::thread_rng();
 
-    let mut x = rng.gen_range(0..crate::WIDTH/crate::SCALE);
-    let mut y = rng.gen_range(0..crate::HEIGHT/crate::SCALE) - crate::MENU_SIZE ;
+    for _ in 0..2 {
+        let mut x = rng.gen_range(0..crate::WIDTH/crate::SCALE);
+        let mut y = rng.gen_range(0..crate::HEIGHT/crate::SCALE) - crate::MENU_SIZE ;
 
-    while land_query.iter().any(|pos| pos.x as i32 == x as i32 && pos.y as i32 == y as i32) {
-        x = rng.gen_range(0..crate::WIDTH/crate::SCALE);
-        y = rng.gen_range(0..crate::HEIGHT/crate::SCALE) - crate::MENU_SIZE ;
-    }
+        while land_query.iter().any(|pos| pos.x as i32 == x as i32 && pos.y as i32 == y as i32) {
+            x = rng.gen_range(0..crate::WIDTH/crate::SCALE);
+            y = rng.gen_range(0..crate::HEIGHT/crate::SCALE) - crate::MENU_SIZE ;
+        }
 
-    let new_angle = rng.gen_range(0.0..360.0); 
-    let entity = commands.spawn(bundle::SpreadBundle {
-        position: component::Position { x: x as f32, y: y as f32 },
-        velocity: component::Velocity { x: f32::cos(new_angle), y:f32::sin(new_angle) },
-        speed: component::Speed { value: rng.gen_range(5.0..15.0) },
-        colour: component::Colour { r: utils::COLOUR_SPREAD[0], g: utils::COLOUR_SPREAD[1], b: utils::COLOUR_SPREAD[2], a: utils::COLOUR_SPREAD[3] },
-        spread: component::Spread { duration: 2.0, counter: 0.0 },
-        hunger: component::Hunger { duration: 1000.0, counter: 0.0 },
-    }).id();
+        let new_angle = rng.gen_range(0.0..360.0); 
+        let entity = commands.spawn(bundle::SpreadBundle {
+            position: component::Position { x: x as f32, y: y as f32 },
+            velocity: component::Velocity { x: f32::cos(new_angle), y:f32::sin(new_angle) },
+            speed: component::Speed { value: rng.gen_range(5.0..15.0) },
+            colour: component::Colour { r: utils::COLOUR_SPREAD[0], g: utils::COLOUR_SPREAD[1], b: utils::COLOUR_SPREAD[2], a: utils::COLOUR_SPREAD[3] },
+            spread: component::Spread { duration: 2.0, counter: 0.0 },
+            hunger: component::Hunger { duration: 1000.0, counter: 0.0 },
+        }).id();
 
-    for (mut list, chunk) in chunk_query.iter_mut() {
-        if chunk.x == (x / crate::CHUNK_SIZE) && chunk.y == (y / crate::CHUNK_SIZE) {
-            list.entities.push(entity);
+        for (mut list, chunk) in chunk_query.iter_mut() {
+            if chunk.x == (x / crate::CHUNK_SIZE) && chunk.y == (y / crate::CHUNK_SIZE) {
+                list.entities.push(entity);
+            }
         }
     }
 }
@@ -125,7 +127,7 @@ pub fn movement(
 
 pub fn spread(
     mut commands: Commands,
-    mut spread_query: Query<(Entity, &component::Position, &component::Colour, &component::Hunger, &mut component::Spread)>,
+    mut spread_query: Query<(Entity, &component::Position, &component::Colour, &component::Hunger, &mut component::Spread), Without<component::Input>>,
     mut chunk_query: Query<(&mut component::EntityList, &component::Chunk)>, 
     time: Res<Time>,
     asset_server: Res<AssetServer>
@@ -180,7 +182,7 @@ pub fn spread(
 
 pub fn hunger (
     mut commands: Commands,
-    mut spread_query: Query<(Entity, &mut component::Hunger)>,
+    mut spread_query: Query<(Entity, &mut component::Hunger), Without<component::Input>>,
     time: Res<Time>
     ) {
     for (entity, mut hunger) in spread_query.iter_mut() {
